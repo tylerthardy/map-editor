@@ -1,7 +1,8 @@
 import { BufferGeometry, BufferAttribute, Color } from "three";
+import { ColorDefinition, ColorDefinitions } from "./color/color-definition";
 
 export abstract class GeometryColorizer {
-    static triangleTestColors(geometry: BufferGeometry) {
+    static testTriangleColors(geometry: BufferGeometry) {
         const count = geometry.attributes.position.count;
         geometry.setAttribute( 'color', new BufferAttribute( new Float32Array( count * 3 ), 3 ) );
         const colors1 = geometry.attributes.color;
@@ -17,35 +18,45 @@ export abstract class GeometryColorizer {
         return geometry;
     }
 
-    static squareTestColors(geometry: BufferGeometry) {
+    static testSquareColors(geometry: BufferGeometry): BufferGeometry {
         const count = geometry.attributes.position.count;
         geometry.setAttribute( 'color', new BufferAttribute( new Float32Array( count * 3 ), 3 ) );
         const colors1 = geometry.attributes.color;
-        const color = new Color();
-        color.g = 0;
-        for (let squareIndex = 0; squareIndex < count / 6; squareIndex++) {
-            const isEvenSquare = squareIndex % 2;
-            color.r = isEvenSquare ? 1 : 0;
-            color.b = isEvenSquare ? 0 : 1;
-            colors1.setXYZ( squareIndex, color.r, color.g, color.b );
-        }
+        this.getTestSquareColors(count).forEach((cd, i) => colors1.setXYZ(i, cd.r, cd.g, cd.b));
 
         return geometry;
     }
 
-    static randomSquareColors(geometry: BufferGeometry) {
+    static randomSquareColors(geometry: BufferGeometry): BufferGeometry {
         const count = geometry.attributes.position.count;
         geometry.setAttribute( 'color', new BufferAttribute( new Float32Array( count * 3 ), 3 ) );
         const colors1 = geometry.attributes.color;
-        const color = new Color();
-        color.g = 0;
-        for (let squareIndex = 0; squareIndex < count / 6; squareIndex++) {
+        this.getRandomSquareColors(count).forEach((cd, i) => colors1.setXYZ(i, cd.r, cd.g, cd.b));
+
+        return geometry;
+    }
+
+    static getRandomSquareColors(numberOfSquares: number): ColorDefinition[] {
+        let colors: ColorDefinition[] = [];
+        for (let i = 0; i < numberOfSquares; i++) {
             const r = Math.random();
             const g = Math.random();
             const b = Math.random();
             for (let vertexIndex = 0; vertexIndex < 6; vertexIndex++) {
-                colors1.setXYZ( (squareIndex * 6) + vertexIndex, r, g, b );
+                colors.push(new ColorDefinition(r, g, b));
             }
         }
+        return colors;
+    }
+
+    static getTestSquareColors(numberOfSquares: number): ColorDefinition[] {
+        let colors: ColorDefinition[] = [];
+        for (let i = 0; i < numberOfSquares; i++) {
+            const colorDefintion = i % 2 ? ColorDefinitions.RED : ColorDefinitions.BLUE;
+            for (let vertexIndex = 0; vertexIndex < 6; vertexIndex++) {
+                colors.push(colorDefintion);
+            }
+        }
+        return colors;
     }
 }

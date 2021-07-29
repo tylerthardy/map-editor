@@ -19,5 +19,4 @@ export abstract class ColorDefinitions {
     static CYAN = new ColorDefinition(0, 1, 1);
     static MAGENTA = new ColorDefinition(1, 0, 1);
     static YELLOW = new ColorDefinition(1, 1, 0);
-    static GRAY = new ColorDefinition(0.5, 0.5, 0.5);
 }
