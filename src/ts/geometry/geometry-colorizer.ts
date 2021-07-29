@@ -1,7 +1,23 @@
 import { BufferGeometry, BufferAttribute, Color } from "three";
 import { ColorDefinition, ColorDefinitions } from "./color/color-definition";
 
+// TODO: Clean up and make tile methods based on generateColorAttribute
 export abstract class GeometryColorizer {
+    static generateColorAttribute(vertexPositionCount: number, colors: ColorDefinition[]): BufferAttribute {
+        const bufferAttribute = new BufferAttribute( new Float32Array( vertexPositionCount * 3 ), 3 );
+        colors.forEach((cd, i) => bufferAttribute.setXYZ(i, cd.r, cd.g, cd.b));
+        return bufferAttribute;
+    }
+
+    static squareColors(geometry: BufferGeometry, colors: ColorDefinition[]) {
+        const count = geometry.attributes.position.count;
+        geometry.setAttribute('color', new BufferAttribute( new Float32Array( count * 3 ), 3 ) );
+        const colors1 = geometry.attributes.color;
+        colors.forEach((cd, i) => colors1.setXYZ(i, cd.r, cd.g, cd.b));
+
+        return geometry;
+    }
+
     static testTriangleColors(geometry: BufferGeometry) {
         const count = geometry.attributes.position.count;
         geometry.setAttribute( 'color', new BufferAttribute( new Float32Array( count * 3 ), 3 ) );
@@ -34,6 +50,19 @@ export abstract class GeometryColorizer {
         this.getRandomSquareColors(count).forEach((cd, i) => colors1.setXYZ(i, cd.r, cd.g, cd.b));
 
         return geometry;
+    }
+
+    static getSolidSquareColor(numberOfSquares: number, color: ColorDefinition): ColorDefinition[] {
+        let colors: ColorDefinition[] = [];
+        for (let i = 0; i < numberOfSquares; i++) {
+            const r = Math.random();
+            const g = Math.random();
+            const b = Math.random();
+            for (let vertexIndex = 0; vertexIndex < 6; vertexIndex++) {
+                colors.push(color);
+            }
+        }
+        return colors;
     }
 
     static getRandomSquareColors(numberOfSquares: number): ColorDefinition[] {

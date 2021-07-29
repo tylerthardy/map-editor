@@ -1,6 +1,7 @@
 import { BoxGeometry, ConeGeometry, Mesh, MeshBasicMaterial } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { BaseTerrainViewport, BaseTerrainViewportConfig } from "./base-terrain-viewport";
+import { TerrainGenerator } from "./geometry";
 
 export class Terrain2DViewport extends BaseTerrainViewport {
     private orbitControls3D: OrbitControls;
@@ -22,12 +23,15 @@ export class Terrain2DViewport extends BaseTerrainViewport {
         this.target3DRepresentation = this.initTarget3DRepresentation();
         this.scene.add(this.target3DRepresentation);
 
+        this.orbitControls.enabled = false;
+
         this.registerAnimationEvents();
     }
 
     registerAnimationEvents() {
         this.animationEvents.push((time) => this.updateOrbitControls3DPosition());
         this.animationEvents.push((time) => this.updateTargetPosition());
+        // this.animationEvents.push((time) => this.terrainGeometry = TerrainGenerator.flattenGeometry(this.terrainGeometry));
     }
 
     initTarget3DRepresentation(): Mesh {

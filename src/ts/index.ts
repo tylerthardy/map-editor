@@ -3,11 +3,18 @@ import { Terrain2DViewport } from "./terrain-2d-viewport";
 import { Terrain3DViewport } from "./terrain-3d-viewport";
 import { ComponentContainer, GoldenLayout, LayoutConfig } from 'golden-layout';
 import { GeometryColorizer, TerrainGenerator } from "./geometry";
+import { ColorDefinitions } from "./geometry/color/color-definition";
 
 window.addEventListener('resize', resizeWindow);
 
-const terrainGeometry = TerrainGenerator.generateGeometry(16, 16, 1, 200);
-GeometryColorizer.randomSquareColors(terrainGeometry);
+const terrain3dGeometry = TerrainGenerator.generateGeometry(16, 16, 1, 200);
+const terrain2dGeometry = TerrainGenerator.flattenGeometry(terrain3dGeometry);
+
+const colors = GeometryColorizer.getSolidSquareColor(16 * 16, ColorDefinitions.GRAY);
+const vertexPositionCount = terrain3dGeometry.attributes.position.count;
+const colorAttribute = GeometryColorizer.generateColorAttribute(vertexPositionCount, colors);
+terrain2dGeometry.attributes.color = colorAttribute;
+terrain3dGeometry.attributes.color = colorAttribute;
 
 const container = document.getElementById('container');
 var layoutConfig: LayoutConfig = {
@@ -18,14 +25,14 @@ var layoutConfig: LayoutConfig = {
             {
                 type: 'component',
                 title: '3D Editor',
-                width: 75,
+                width: 50,
                 componentType: 'terrain3dViewport',
                 componentState: {}
             },
             {
                 type: 'component',
                 title: '2D Editor',
-                width: 25,
+                width: 50,
                 componentType: 'terrain2dViewport',
                 componentState: {}
             }
@@ -44,7 +51,7 @@ layout.registerComponent( 'terrain3dViewport', (c: ComponentContainer, state: an
     viewport3d = new Terrain3DViewport({
         name: 'terrain3dViewport',
         domElement: constructViewportContainer(c.element),
-        terrainGeometry: terrainGeometry,
+        terrainGeometry: terrain3dGeometry,
         terrainMaterial: new MeshStandardMaterial({
             vertexColors: true
         })
@@ -55,7 +62,7 @@ layout.registerComponent('terrain2dViewport', (c: ComponentContainer, state: any
     viewport2d = new Terrain2DViewport({
         name: 'terrain2dViewport',
         domElement: constructViewportContainer(c.element),
-        terrainGeometry: terrainGeometry,
+        terrainGeometry: terrain2dGeometry,
         terrainMaterial: new MeshBasicMaterial({
             vertexColors: true
         }),

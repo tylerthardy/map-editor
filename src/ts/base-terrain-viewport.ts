@@ -1,13 +1,14 @@
-import { AxesHelper, BufferGeometry, Material, Mesh, PerspectiveCamera, PointLight, PointLightHelper, Scene, WebGLRenderer } from "three";
+import { AxesHelper, BufferGeometry, Material, Mesh, PerspectiveCamera, PointLight, PointLightHelper, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Pane } from "tweakpane";
+import { ColorDefinition, ColorDefinitions } from "./geometry/color/color-definition";
 
 export class BaseTerrainViewport {
     private domElement: HTMLElement;
     private name: string;
 
     private terrainMaterial: Material;
-    private terrainGeometry: BufferGeometry;
+    protected terrainGeometry: BufferGeometry;
     private terrainMesh: Mesh;
 
     private camera: PerspectiveCamera;
@@ -15,7 +16,10 @@ export class BaseTerrainViewport {
 
     protected scene: Scene;
     private renderer: WebGLRenderer;
-    
+    private raycaster: Raycaster = new Raycaster();
+    private mouse: Vector2 = new Vector2();
+    private mouseDown: boolean;
+
     private pane: Pane;
     protected animationEvents: ((z: any) => void)[] = [];
 
@@ -30,11 +34,21 @@ export class BaseTerrainViewport {
         this.camera = new PerspectiveCamera(70, this.domElement.offsetWidth / this.domElement.offsetHeight, 0.01, 200);
         this.scene = new Scene();
         this.renderer = new WebGLRenderer({ antialias: true });
+
+        // Observers/Listeners
         new ResizeObserver(() => this.paneResized()).observe(this.domElement);
+        // TODO: Break these into their own responsibilities
+        // TODO: Key manager
+        this.domElement.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event));
+        this.domElement.addEventListener('mousemove', (event: MouseEvent) => this.onMouseMove(event));
+        this.domElement.addEventListener('mouseup', (event: MouseEvent) => this.onMouseUp(event));
+        document.addEventListener('keydown', (event: KeyboardEvent) => this.onKeyDown(event));
+        document.addEventListener('keyup', (event: KeyboardEvent) => this.onKeyUp(event));
 
         // Camera
         this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
         this.loadOrbitControlsLocation(this.orbitControls);
+        this.orbitControls.enabled = false;
 
         // Helpers
         const axesHelper = new AxesHelper(5);
@@ -49,6 +63,9 @@ export class BaseTerrainViewport {
         // Terrain
         this.terrainMesh = this.generateTerrainMesh(this.terrainGeometry);
         this.scene.add(this.terrainMesh);
+
+        // Animation loop
+        this.animationEvents.push((time) => this.paintWithMouse());
 
         // Rendering
         this.renderer.setSize(this.domElement.offsetWidth, this.domElement.offsetHeight);
@@ -68,6 +85,40 @@ export class BaseTerrainViewport {
         this.camera.updateProjectionMatrix();
 
         this.renderer.setSize(this.domElement.offsetWidth, this.domElement.offsetHeight);
+    }
+
+    onMouseDown(event: MouseEvent) {
+        event.preventDefault();
+        if (event.button === 0) {
+            this.mouseDown = true;
+        }
+    }
+
+    onMouseUp(event: MouseEvent) {
+        event.preventDefault();
+        if (event.button === 0) {
+            this.mouseDown = false;
+        }
+    }
+
+    onMouseMove(event: MouseEvent) {
+        event.preventDefault();
+        this.mouse.x = (event.offsetX / this.renderer.domElement.clientWidth) * 2 - 1;
+        this.mouse.y = - (event.offsetY / this.renderer.domElement.clientHeight) * 2 + 1;
+    }
+
+    onKeyUp(event: KeyboardEvent): any {
+        event.preventDefault();
+        if (event.key === 'Alt') {
+            this.orbitControls.enabled = false;
+        }
+    }
+    
+    onKeyDown(event: KeyboardEvent): void {
+        event.preventDefault();
+        if (event.key === 'Alt') {
+            this.orbitControls.enabled = true;
+        }
     }
 
     initLight(showHelper: boolean) {
@@ -196,6 +247,39 @@ export class BaseTerrainViewport {
         }
 
         this.renderer.render(this.scene, this.camera);
+    }
+
+    private paintWithMouse() {
+        if (!this.mouseDown) {
+            return;
+        }
+
+        this.raycaster.setFromCamera(this.mouse, this.camera);
+
+        const recursiveFlag = false;
+        var intersects = this.raycaster.intersectObjects([this.terrainMesh], recursiveFlag);
+
+        if (intersects.length > 0) {
+            const hit = intersects[0];
+            const mesh: Mesh = hit.object as Mesh;
+            const color: ColorDefinition = ColorDefinitions.RED;
+
+            // TODO: There's probably a way to clean this up mathematically
+            mesh.geometry.attributes.color.setXYZ(hit.face.a, color.r, color.g, color.b);
+            mesh.geometry.attributes.color.setXYZ(hit.face.b, color.r, color.g, color.b);
+            mesh.geometry.attributes.color.setXYZ(hit.face.c, color.r, color.g, color.b);
+            if (hit.face.a % 6 === 0) {
+                mesh.geometry.attributes.color.setXYZ(hit.face.a + 3, color.r, color.g, color.b);
+                mesh.geometry.attributes.color.setXYZ(hit.face.b + 3, color.r, color.g, color.b);
+                mesh.geometry.attributes.color.setXYZ(hit.face.c + 3, color.r, color.g, color.b);
+            }
+            if (hit.face.a % 6 === 3) {
+                mesh.geometry.attributes.color.setXYZ(hit.face.a - 3, color.r, color.g, color.b);
+                mesh.geometry.attributes.color.setXYZ(hit.face.b - 3, color.r, color.g, color.b);
+                mesh.geometry.attributes.color.setXYZ(hit.face.c - 3, color.r, color.g, color.b);
+            }
+            mesh.geometry.attributes.color.needsUpdate = true;
+        }
     }
 }
 
