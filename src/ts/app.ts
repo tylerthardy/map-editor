@@ -1,24 +1,29 @@
 import { ComponentContainer, GoldenLayout, LayoutConfig } from 'golden-layout';
 import { MeshBasicMaterial, MeshStandardMaterial } from "three";
+import { _terrainService } from './geometry/terrain.service';
 import { Terrain2DViewport } from "./viewports/terrain-2d-viewport";
 import { Terrain3DViewport } from "./viewports/terrain-3d-viewport";
-import { _keyService } from "./ui/key.service";
-import { _terrainService } from  './geometry/terrain.service';
 
 export class App {
-    constructor() {}
+    constructor() { }
 
     private layout: GoldenLayout;
 
     init() {
-        window.addEventListener('resize', this.resizeWindow);
+        window.addEventListener('resize', () => this.resizeWindow());
 
         const container = document.getElementById('container');
         var layoutConfig: LayoutConfig = {
             root: {
                 type: 'row',
                 content: [
-                    // TODO: Hacky - Order here dictates the registered creation order
+                    {
+                        type: 'component',
+                        title: '2D Editor',
+                        width: 50,
+                        componentType: 'terrain2dViewport',
+                        componentState: {}
+                    },
                     {
                         type: 'component',
                         title: '3D Editor',
@@ -26,20 +31,13 @@ export class App {
                         componentType: 'terrain3dViewport',
                         componentState: {}
                     },
-                    {
-                        type: 'component',
-                        title: '2D Editor',
-                        width: 50,
-                        componentType: 'terrain2dViewport',
-                        componentState: {}
-                    }
                 ]
             }
         }
 
         this.layout = new GoldenLayout(layoutConfig, container);
 
-        // TODO: Hacky hoist
+        // FIXME: Hacky hoist
         let viewport3d: Terrain3DViewport;
         let viewport2d: Terrain2DViewport;
 
@@ -52,6 +50,11 @@ export class App {
                     vertexColors: true
                 })
             });
+
+            // FIXME: Hacky set
+            if (!!viewport2d) {
+                viewport2d.orbitControls3D = viewport3d.orbitControls;
+            }
         });
 
         this.layout.registerComponent('terrain2dViewport', (c: ComponentContainer, state: any) => {
@@ -62,13 +65,13 @@ export class App {
                 terrainMaterial: new MeshBasicMaterial({
                     vertexColors: true
                 }),
-                orbitControls3D: viewport3d.orbitControls
+                orbitControls3D: viewport3d?.orbitControls
             });
         });
 
         this.layout.init();
     }
-    
+
     resizeWindow() {
         this.layout.setSize(window.innerWidth, window.innerHeight);
     }
