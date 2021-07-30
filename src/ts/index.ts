@@ -1,21 +1,11 @@
 import { ComponentContainer, GoldenLayout, LayoutConfig } from 'golden-layout';
 import { MeshBasicMaterial, MeshStandardMaterial } from "three";
-import { GeometryColorizer, TerrainGenerator } from "./geometry";
-import { ColorDefinitions } from "./geometry/color/color-definition";
 import { Terrain2DViewport } from "./terrain-2d-viewport";
 import { Terrain3DViewport } from "./terrain-3d-viewport";
 import { _keyService } from "./ui/key.service";
+import { _terrainService } from  './geometry/terrain.service';
 
 window.addEventListener('resize', resizeWindow);
-
-const terrain3dGeometry = TerrainGenerator.generateGeometry(16, 16, 1, 200);
-const terrain2dGeometry = TerrainGenerator.flattenGeometry(terrain3dGeometry);
-
-const colors = GeometryColorizer.getSolidSquareColor(16 * 16, ColorDefinitions.GRAY);
-const vertexPositionCount = terrain3dGeometry.attributes.position.count;
-const colorAttribute = GeometryColorizer.generateColorAttribute(vertexPositionCount, colors);
-terrain2dGeometry.attributes.color = colorAttribute;
-terrain3dGeometry.attributes.color = colorAttribute;
 
 const container = document.getElementById('container');
 var layoutConfig: LayoutConfig = {
@@ -52,7 +42,7 @@ layout.registerComponent( 'terrain3dViewport', (c: ComponentContainer, state: an
     viewport3d = new Terrain3DViewport({
         name: 'terrain3dViewport',
         parent: c.element,
-        terrainGeometry: terrain3dGeometry,
+        terrainGeometry: _terrainService.terrain3dGeometry,
         terrainMaterial: new MeshStandardMaterial({
             vertexColors: true
         })
@@ -63,7 +53,7 @@ layout.registerComponent('terrain2dViewport', (c: ComponentContainer, state: any
     viewport2d = new Terrain2DViewport({
         name: 'terrain2dViewport',
         parent: c.element,
-        terrainGeometry: terrain2dGeometry,
+        terrainGeometry: _terrainService.terrain2dGeometry,
         terrainMaterial: new MeshBasicMaterial({
             vertexColors: true
         }),
