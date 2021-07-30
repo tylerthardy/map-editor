@@ -2,6 +2,7 @@ import { AxesHelper, BufferGeometry, Material, Mesh, PerspectiveCamera, PointLig
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Pane } from "tweakpane";
 import { ColorDefinition, ColorDefinitions } from "./geometry/color/color-definition";
+import { _keyService } from "./ui/key.service";
 
 export class BaseTerrainViewport {
     private domElement: HTMLElement;
@@ -37,18 +38,20 @@ export class BaseTerrainViewport {
 
         // Observers/Listeners
         new ResizeObserver(() => this.paneResized()).observe(this.domElement);
-        // TODO: Break these into their own responsibilities
-        // TODO: Key manager
         this.domElement.addEventListener('mousedown', (event: MouseEvent) => this.onMouseDown(event));
         this.domElement.addEventListener('mousemove', (event: MouseEvent) => this.onMouseMove(event));
         this.domElement.addEventListener('mouseup', (event: MouseEvent) => this.onMouseUp(event));
-        document.addEventListener('keydown', (event: KeyboardEvent) => this.onKeyDown(event));
-        document.addEventListener('keyup', (event: KeyboardEvent) => this.onKeyUp(event));
 
         // Camera
         this.orbitControls = new OrbitControls(this.camera, this.renderer.domElement);
         this.loadOrbitControlsLocation(this.orbitControls);
         this.orbitControls.enabled = false;
+        _keyService.registerKeyEvent({
+            key: "Alt",
+            name: "terrain-viewport-alt",
+            keyDown: () => this.orbitControls.enabled = true,
+            keyUp: () => this.orbitControls.enabled = false
+        });
 
         // Helpers
         const axesHelper = new AxesHelper(5);
@@ -105,20 +108,6 @@ export class BaseTerrainViewport {
         event.preventDefault();
         this.mouse.x = (event.offsetX / this.renderer.domElement.clientWidth) * 2 - 1;
         this.mouse.y = - (event.offsetY / this.renderer.domElement.clientHeight) * 2 + 1;
-    }
-
-    onKeyUp(event: KeyboardEvent): any {
-        event.preventDefault();
-        if (event.key === 'Alt') {
-            this.orbitControls.enabled = false;
-        }
-    }
-    
-    onKeyDown(event: KeyboardEvent): void {
-        event.preventDefault();
-        if (event.key === 'Alt') {
-            this.orbitControls.enabled = true;
-        }
     }
 
     initLight(showHelper: boolean) {

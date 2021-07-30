@@ -4,6 +4,7 @@ import { GeometryColorizer, TerrainGenerator } from "./geometry";
 import { ColorDefinitions } from "./geometry/color/color-definition";
 import { Terrain2DViewport } from "./terrain-2d-viewport";
 import { Terrain3DViewport } from "./terrain-3d-viewport";
+import { _keyService } from "./ui/key.service";
 
 window.addEventListener('resize', resizeWindow);
 
