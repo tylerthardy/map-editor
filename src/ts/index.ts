@@ -1,9 +1,9 @@
-import { MeshBasicMaterial, MeshStandardMaterial } from "three";
-import { Terrain2DViewport } from "./terrain-2d-viewport";
-import { Terrain3DViewport } from "./terrain-3d-viewport";
 import { ComponentContainer, GoldenLayout, LayoutConfig } from 'golden-layout';
+import { MeshBasicMaterial, MeshStandardMaterial } from "three";
 import { GeometryColorizer, TerrainGenerator } from "./geometry";
 import { ColorDefinitions } from "./geometry/color/color-definition";
+import { Terrain2DViewport } from "./terrain-2d-viewport";
+import { Terrain3DViewport } from "./terrain-3d-viewport";
 
 window.addEventListener('resize', resizeWindow);
 
