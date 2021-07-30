@@ -259,7 +259,7 @@ export class BaseTerrainViewport {
     }
 
     private paintWithMouse() {
-        if (!this.mouseDown) {
+        if (!this.mouseDown || this.orbitControls.enabled) {
             return;
         }
 
