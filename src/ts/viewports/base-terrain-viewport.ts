@@ -114,7 +114,7 @@ export class BaseTerrainViewport {
 
     initLight(showHelper: boolean) {
         const pointLight = new PointLight();
-        pointLight.position.set(8, 30, 8);
+        pointLight.position.set(32, 300, 32);
         pointLight.intensity = 1;
 
         let pointLightHelper = null;

@@ -11,10 +11,10 @@ export class TerrainService {
     }
 
     init() {
-        this.terrain3dGeometry = TerrainGenerator.generateGeometry(16, 16, 1, 200);
+        this.terrain3dGeometry = TerrainGenerator.generateGeometry(64, 64, 1, 200);
         this.terrain2dGeometry = TerrainGenerator.flattenGeometry(this.terrain3dGeometry);
 
-        const colors = GeometryColorizer.getSolidSquareColor(16 * 16, ColorDefinitions.GRAY);
+        const colors = GeometryColorizer.getSolidSquareColor(64 * 64, ColorDefinitions.GRAY);
         const vertexPositionCount = this.terrain3dGeometry.attributes.position.count;
         const colorAttribute = GeometryColorizer.generateColorAttribute(vertexPositionCount, colors);
         this.terrain2dGeometry.attributes.color = colorAttribute;
