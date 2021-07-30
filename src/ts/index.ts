@@ -1,7 +1,7 @@
 import { ComponentContainer, GoldenLayout, LayoutConfig } from 'golden-layout';
 import { MeshBasicMaterial, MeshStandardMaterial } from "three";
-import { Terrain2DViewport } from "./terrain-2d-viewport";
-import { Terrain3DViewport } from "./terrain-3d-viewport";
+import { Terrain2DViewport } from "./viewports/terrain-2d-viewport";
+import { Terrain3DViewport } from "./viewports/terrain-3d-viewport";
 import { _keyService } from "./ui/key.service";
 import { _terrainService } from  './geometry/terrain.service';
 
@@ -32,7 +32,6 @@ var layoutConfig: LayoutConfig = {
 }
 
 var layout = new GoldenLayout(layoutConfig, container);
-
 
 // TODO: Hacky hoist
 let viewport3d: Terrain3DViewport;

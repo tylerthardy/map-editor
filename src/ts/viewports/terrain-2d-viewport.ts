@@ -1,7 +1,7 @@
 import { BoxGeometry, ConeGeometry, Mesh, MeshBasicMaterial } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { BaseTerrainViewport, BaseTerrainViewportConfig } from "./base-terrain-viewport";
-import { TerrainGenerator } from "./geometry";
+import { TerrainGenerator } from "../geometry";
 
 export class Terrain2DViewport extends BaseTerrainViewport {
     private orbitControls3D: OrbitControls;

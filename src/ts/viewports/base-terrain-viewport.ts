@@ -1,8 +1,8 @@
 import { AxesHelper, BufferGeometry, Material, Mesh, PerspectiveCamera, PointLight, PointLightHelper, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Pane } from "tweakpane";
-import { ColorDefinition, ColorDefinitions } from "./geometry/color/color-definition";
-import { _keyService } from "./ui/key.service";
+import { ColorDefinition, ColorDefinitions } from "../geometry/color/color-definition";
+import { _keyService } from "../ui/key.service";
 
 export class BaseTerrainViewport {
     private parent: HTMLElement;
