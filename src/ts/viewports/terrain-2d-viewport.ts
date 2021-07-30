@@ -31,7 +31,6 @@ export class Terrain2DViewport extends BaseTerrainViewport {
     registerAnimationEvents() {
         this.animationEvents.push((time) => this.updateOrbitControls3DPosition());
         this.animationEvents.push((time) => this.updateTargetPosition());
-        // this.animationEvents.push((time) => this.terrainGeometry = TerrainGenerator.flattenGeometry(this.terrainGeometry));
     }
 
     initTarget3DRepresentation(): Mesh {

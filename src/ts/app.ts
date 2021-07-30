@@ -43,7 +43,7 @@ export class App {
         let viewport3d: Terrain3DViewport;
         let viewport2d: Terrain2DViewport;
 
-        this.layout.registerComponent( 'terrain3dViewport', (c: ComponentContainer, state: any) => {
+        this.layout.registerComponent('terrain3dViewport', (c: ComponentContainer, state: any) => {
             viewport3d = new Terrain3DViewport({
                 name: 'terrain3dViewport',
                 parent: c.element,
