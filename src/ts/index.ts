@@ -51,7 +51,7 @@ let viewport2d: Terrain2DViewport;
 layout.registerComponent( 'terrain3dViewport', (c: ComponentContainer, state: any) => {
     viewport3d = new Terrain3DViewport({
         name: 'terrain3dViewport',
-        domElement: constructViewportContainer(c.element),
+        parent: c.element,
         terrainGeometry: terrain3dGeometry,
         terrainMaterial: new MeshStandardMaterial({
             vertexColors: true
@@ -62,7 +62,7 @@ layout.registerComponent( 'terrain3dViewport', (c: ComponentContainer, state: an
 layout.registerComponent('terrain2dViewport', (c: ComponentContainer, state: any) => {
     viewport2d = new Terrain2DViewport({
         name: 'terrain2dViewport',
-        domElement: constructViewportContainer(c.element),
+        parent: c.element,
         terrainGeometry: terrain2dGeometry,
         terrainMaterial: new MeshBasicMaterial({
             vertexColors: true
@@ -72,25 +72,6 @@ layout.registerComponent('terrain2dViewport', (c: ComponentContainer, state: any
 });
 
 layout.init();
-
-// TODO: Should be moved into the base terrain viewport construction
-function constructViewportContainer(parent: HTMLElement) {
-    const viewportContainer = document.createElement('div');
-    viewportContainer.classList.add('viewport-container');
-
-    const paneContainer = document.createElement('div');
-    paneContainer.classList.add('pane-container');
-
-    const viewport = document.createElement('div');
-    viewport.classList.add('viewport');
-    viewport.appendChild(paneContainer);
-
-    viewportContainer.appendChild(viewport);
-
-    parent.appendChild(viewportContainer);
-
-    return viewport;
-}
 
 function resizeWindow() {
     layout.setSize(window.innerWidth, window.innerHeight);

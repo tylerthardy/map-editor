@@ -5,6 +5,7 @@ import { ColorDefinition, ColorDefinitions } from "./geometry/color/color-defini
 import { _keyService } from "./ui/key.service";
 
 export class BaseTerrainViewport {
+    private parent: HTMLElement;
     private domElement: HTMLElement;
     private name: string;
 
@@ -25,13 +26,14 @@ export class BaseTerrainViewport {
     protected animationEvents: ((z: any) => void)[] = [];
 
     constructor(config: BaseTerrainViewportConfig) {
-        this.domElement = config.domElement;
+        this.parent = config.parent;
         this.name = config.name;
         this.terrainGeometry = config.terrainGeometry;
         this.terrainMaterial = config.terrainMaterial;
     }
 
     init(): void {
+        this.domElement = this.constructViewportContainer(this.parent);
         this.camera = new PerspectiveCamera(70, this.domElement.offsetWidth / this.domElement.offsetHeight, 0.01, 200);
         this.scene = new Scene();
         this.renderer = new WebGLRenderer({ antialias: true });
@@ -238,6 +240,24 @@ export class BaseTerrainViewport {
         this.renderer.render(this.scene, this.camera);
     }
 
+    private constructViewportContainer(parent: HTMLElement) {
+        const viewportContainer = document.createElement('div');
+        viewportContainer.classList.add('viewport-container');
+
+        const paneContainer = document.createElement('div');
+        paneContainer.classList.add('pane-container');
+
+        const viewport = document.createElement('div');
+        viewport.classList.add('viewport');
+        viewport.appendChild(paneContainer);
+
+        viewportContainer.appendChild(viewport);
+
+        parent.appendChild(viewportContainer);
+
+        return viewport;
+    }
+
     private paintWithMouse() {
         if (!this.mouseDown) {
             return;
@@ -274,7 +294,7 @@ export class BaseTerrainViewport {
 
 export interface BaseTerrainViewportConfig {
     name: string;
-    domElement: HTMLElement;
+    parent: HTMLElement;
     terrainMaterial: Material;
     terrainGeometry: BufferGeometry;
 }
