@@ -1,4 +1,4 @@
-import { AxesHelper, BufferGeometry, Material, Mesh, PerspectiveCamera, PointLight, PointLightHelper, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from "three";
+import { AxesHelper, BufferGeometry, Face, Material, Mesh, PerspectiveCamera, PointLight, PointLightHelper, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Pane } from "tweakpane";
 import { ColorDefinition, ColorDefinitions } from "../geometry/color/color-definition";
@@ -21,6 +21,8 @@ export class BaseTerrainViewport {
     private raycaster: Raycaster = new Raycaster();
     private mouse: Vector2 = new Vector2();
     private mouseDown: boolean;
+    private highlightedSquareTriangle: Face;
+    private highlightedSquareOriginalColor: ColorDefinition;
 
     private pane: Pane;
     protected animationEvents: ((z: any) => void)[] = [];
@@ -70,7 +72,7 @@ export class BaseTerrainViewport {
         this.scene.add(this.terrainMesh);
 
         // Animation loop
-        this.animationEvents.push((time) => this.paintWithMouse());
+        this.animationEvents.push((time) => this.processMouse());
 
         // Rendering
         this.renderer.setSize(this.domElement.offsetWidth, this.domElement.offsetHeight);
@@ -258,37 +260,102 @@ export class BaseTerrainViewport {
         return viewport;
     }
 
-    private paintWithMouse() {
-        if (!this.mouseDown || this.orbitControls.enabled) {
-            return;
-        }
-
+    private processMouse() {
         this.raycaster.setFromCamera(this.mouse, this.camera);
-
         const recursiveFlag = false;
         var intersects = this.raycaster.intersectObjects([this.terrainMesh], recursiveFlag);
 
-        if (intersects.length > 0) {
-            const hit = intersects[0];
-            const mesh: Mesh = hit.object as Mesh;
-            const color: ColorDefinition = ColorDefinitions.RED;
-
-            // TODO: There's probably a way to clean this up mathematically
-            mesh.geometry.attributes.color.setXYZ(hit.face.a, color.r, color.g, color.b);
-            mesh.geometry.attributes.color.setXYZ(hit.face.b, color.r, color.g, color.b);
-            mesh.geometry.attributes.color.setXYZ(hit.face.c, color.r, color.g, color.b);
-            if (hit.face.a % 6 === 0) {
-                mesh.geometry.attributes.color.setXYZ(hit.face.a + 3, color.r, color.g, color.b);
-                mesh.geometry.attributes.color.setXYZ(hit.face.b + 3, color.r, color.g, color.b);
-                mesh.geometry.attributes.color.setXYZ(hit.face.c + 3, color.r, color.g, color.b);
-            }
-            if (hit.face.a % 6 === 3) {
-                mesh.geometry.attributes.color.setXYZ(hit.face.a - 3, color.r, color.g, color.b);
-                mesh.geometry.attributes.color.setXYZ(hit.face.b - 3, color.r, color.g, color.b);
-                mesh.geometry.attributes.color.setXYZ(hit.face.c - 3, color.r, color.g, color.b);
-            }
-            mesh.geometry.attributes.color.needsUpdate = true;
+        if (intersects.length === 0) {
+            return;
         }
+
+        const hit = intersects[0];
+        const mesh: Mesh = hit.object as Mesh;
+        
+        if (!hit.face) {
+            return;
+        }
+
+        if (this.mouseDown && !this.orbitControls.enabled) {
+            this.paintWithMouse(mesh, hit.face, ColorDefinitions.RED);
+        }
+
+        this.drawMouseHighlight(mesh, hit.face, ColorDefinitions.RED);
+    }
+
+    // FIXME: This is a hacky solution. We should be maintaining the color of a tile in a separate area, not as part of a state machine.
+    private drawMouseHighlight(mesh: Mesh, face: Face, color: ColorDefinition) {
+        this.unhighlightMousePosition(mesh);
+        this.highlightMousePosition(face, mesh, color);
+    }
+
+    private highlightMousePosition(face: Face, mesh: Mesh, color: ColorDefinition) {
+        this.highlightedSquareTriangle = face;
+        this.highlightedSquareOriginalColor = new ColorDefinition(
+            mesh.geometry.attributes.color.getX(face.a),
+            mesh.geometry.attributes.color.getY(face.a),
+            mesh.geometry.attributes.color.getZ(face.a)
+        );
+        GeometryUtils.tintColorSquareByFace(mesh, face, color, 0.4);
+    }
+
+    private unhighlightMousePosition(mesh: Mesh) {
+        if (!this.highlightedSquareTriangle) {
+            return;
+        }
+
+        GeometryUtils.colorSquareByFace(mesh, this.highlightedSquareTriangle, this.highlightedSquareOriginalColor);
+    }
+
+    private paintWithMouse(mesh: Mesh, face: Face, color: ColorDefinition) {
+        GeometryUtils.colorSquareByFace(mesh, face, ColorDefinitions.RED);
+    }
+}
+
+// TODO: Move these as responsibilities of the terrain layer. So we can determine the x/y coords of the square, rather than always relying on the faces of geometry.
+export abstract class GeometryUtils {
+    public static colorSquareByFace(mesh: Mesh, face: Face, color: ColorDefinition) {
+        mesh.geometry.attributes.color.setXYZ(face.a, color.r, color.g, color.b);
+        mesh.geometry.attributes.color.setXYZ(face.b, color.r, color.g, color.b);
+        mesh.geometry.attributes.color.setXYZ(face.c, color.r, color.g, color.b);
+        if (face.a % 6 === 0) {
+            mesh.geometry.attributes.color.setXYZ(face.a + 3, color.r, color.g, color.b);
+            mesh.geometry.attributes.color.setXYZ(face.b + 3, color.r, color.g, color.b);
+            mesh.geometry.attributes.color.setXYZ(face.c + 3, color.r, color.g, color.b);
+        }
+        if (face.a % 6 === 3) {
+            mesh.geometry.attributes.color.setXYZ(face.a - 3, color.r, color.g, color.b);
+            mesh.geometry.attributes.color.setXYZ(face.b - 3, color.r, color.g, color.b);
+            mesh.geometry.attributes.color.setXYZ(face.c - 3, color.r, color.g, color.b);
+        }
+        mesh.geometry.attributes.color.needsUpdate = true;
+
+    }
+
+    public static tintColorSquareByFace(mesh: Mesh, face: Face, overlayColor: ColorDefinition, opacity: number) {
+        const baseColor = new ColorDefinition(
+            mesh.geometry.attributes.color.getX(face.a),
+            mesh.geometry.attributes.color.getY(face.a),
+            mesh.geometry.attributes.color.getZ(face.a)
+        );
+
+        const tintedColor = this.calculateOverlayColor(baseColor, overlayColor, opacity);
+        this.colorSquareByFace(mesh, face, tintedColor);
+    }
+
+    public static calculateOverlayColor(baseColor: ColorDefinition, overlayColor: ColorDefinition, overlayOpacity: number): ColorDefinition {
+        // https://stackoverflow.com/a/29039328
+        const r = this.calculateOverlayColorBand(baseColor.r, overlayColor.r, overlayOpacity);
+        const g = this.calculateOverlayColorBand(baseColor.g, overlayColor.g, overlayOpacity);
+        const b = this.calculateOverlayColorBand(baseColor.b, overlayColor.b, overlayOpacity);
+        return new ColorDefinition(r, g, b);
+    }
+
+    public static calculateOverlayColorBand(baseBandValue: number, overlayBandValue: number, overlayOpacity: number): number {
+        const baseOpacity = 1;
+        const targetOpacity = 1;
+        const opacityCoeff = 1 / targetOpacity;
+        return opacityCoeff * (overlayBandValue * overlayOpacity + baseBandValue * baseOpacity * (1 - overlayOpacity));
     }
 }
 

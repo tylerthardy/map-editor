@@ -38,6 +38,17 @@
             height: 100%;
             margin: 5px;
         }
+
+        /* Remove rounded corners from tweakpane pane, dropdown icon, and dropdown */
+        .tp-rotv, .tp-rotv_b, .tp-rotv_c, .tp-fldv_b,
+        .tp-fldv_m,
+        .tp-rotv_c>.tp-fldv.tp-v-lst>.tp-fldv_c, .tp-rotv_c>.tp-tabv.tp-v-lst>.tp-tabv_c {
+            border-radius: 0px !important;
+        }
+
+        .tp-rotv {
+            font-family: Arial, sans-serif !important;
+        }
     </style>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.min.js"></script>

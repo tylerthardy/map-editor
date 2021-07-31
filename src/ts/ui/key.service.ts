@@ -2,8 +2,10 @@ export class KeyService {
     constructor() {
         document.addEventListener('keydown', (event: KeyboardEvent) => this.onKeyDown(event));
         document.addEventListener('keyup', (event: KeyboardEvent) => this.onKeyUp(event));
+        window.addEventListener('blur', () => this.onWindowBlur());
     }
 
+    private keyDowns: {[key: string]: boolean} = {};
     private keyEvents: {[key: string]: KeyEvent[]} = {};
 
     registerKeyEvent(keyEvent: KeyEvent): KeyEvent {
@@ -22,6 +24,7 @@ export class KeyService {
     }
 
     private onKeyUp(event: KeyboardEvent): void {
+        this.keyDowns[event.key] = false;
         if (!this.keyEvents[event.key]) return;
 
         event.preventDefault();
@@ -31,12 +34,27 @@ export class KeyService {
     }
 
     private onKeyDown(event: KeyboardEvent): void {
+        this.keyDowns[event.key] = true;
         if (!this.keyEvents[event.key]) return;
 
         event.preventDefault();
         const events = this.keyEvents[event.key].filter(ke => !!ke.keyDown);
         events.forEach(ke => ke.keyDown(event));
         console.log('keydown: %s', event.key);
+    }
+
+    private onWindowBlur(): void {
+        // When window loses focus without a keyup, we should fake the keyups
+        const keys = Object.keys(this.keyDowns);
+        
+        keys.forEach(key => {
+            const fakeEvent = {
+                key: key,
+                preventDefault: () => {}
+            } as KeyboardEvent;
+
+            this.onKeyUp(fakeEvent);
+        });
     }
 }
 
