@@ -2,6 +2,7 @@ import { AxesHelper, BufferGeometry, Face, Material, Mesh, PerspectiveCamera, Po
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Pane } from "tweakpane";
 import { ColorDefinition, ColorDefinitions } from "../geometry/color/color-definition";
+import { _terrainService } from "../geometry/terrain/terrain.service";
 import { _keyService } from "../ui/key.service";
 
 export class BaseTerrainViewport {
@@ -296,7 +297,7 @@ export class BaseTerrainViewport {
             mesh.geometry.attributes.color.getY(face.a),
             mesh.geometry.attributes.color.getZ(face.a)
         );
-        GeometryUtils.tintColorSquareByFace(mesh, face, color, 0.4);
+        GeometryColorUtils.tintColorSquareByFace(mesh, face, color, 0.4);
     }
 
     private unhighlightMousePosition(mesh: Mesh) {
@@ -304,32 +305,39 @@ export class BaseTerrainViewport {
             return;
         }
 
-        GeometryUtils.colorSquareByFace(mesh, this.highlightedSquareTriangle, this.highlightedSquareOriginalColor);
+        GeometryColorUtils.colorSquareByFace(mesh, this.highlightedSquareTriangle, this.highlightedSquareOriginalColor);
     }
 
     private paintWithMouse(mesh: Mesh, face: Face, color: ColorDefinition) {
-        GeometryUtils.colorSquareByFace(mesh, face, ColorDefinitions.RED);
+        GeometryColorUtils.colorSquareByFace(mesh, face, ColorDefinitions.RED);
     }
 }
 
 // TODO: Move these as responsibilities of the terrain layer. So we can determine the x/y coords of the square, rather than always relying on the faces of geometry.
-export abstract class GeometryUtils {
+export abstract class GeometryColorUtils {
     public static colorSquareByFace(mesh: Mesh, face: Face, color: ColorDefinition) {
-        mesh.geometry.attributes.color.setXYZ(face.a, color.r, color.g, color.b);
-        mesh.geometry.attributes.color.setXYZ(face.b, color.r, color.g, color.b);
-        mesh.geometry.attributes.color.setXYZ(face.c, color.r, color.g, color.b);
+        this.colorFace(mesh, face, color);
         if (face.a % 6 === 0) {
-            mesh.geometry.attributes.color.setXYZ(face.a + 3, color.r, color.g, color.b);
-            mesh.geometry.attributes.color.setXYZ(face.b + 3, color.r, color.g, color.b);
-            mesh.geometry.attributes.color.setXYZ(face.c + 3, color.r, color.g, color.b);
+            this.colorVertexByIndex(mesh, face.a + 3, color);
+            this.colorVertexByIndex(mesh, face.b + 3, color);
+            this.colorVertexByIndex(mesh, face.c + 3, color);
         }
         if (face.a % 6 === 3) {
-            mesh.geometry.attributes.color.setXYZ(face.a - 3, color.r, color.g, color.b);
-            mesh.geometry.attributes.color.setXYZ(face.b - 3, color.r, color.g, color.b);
-            mesh.geometry.attributes.color.setXYZ(face.c - 3, color.r, color.g, color.b);
+            this.colorVertexByIndex(mesh, face.a - 3, color);
+            this.colorVertexByIndex(mesh, face.b - 3, color);
+            this.colorVertexByIndex(mesh, face.c - 3, color);
         }
         mesh.geometry.attributes.color.needsUpdate = true;
+    }
 
+    public static colorVertexByIndex(mesh: Mesh, index: number, color: ColorDefinition) {
+        mesh.geometry.attributes.color.setXYZ(index, color.r, color.g, color.b);
+    }
+
+    private static colorFace(mesh: Mesh, face: Face, color: ColorDefinition) {
+        this.colorVertexByIndex(mesh, face.a, color);
+        this.colorVertexByIndex(mesh, face.b, color);
+        this.colorVertexByIndex(mesh, face.c, color);
     }
 
     public static tintColorSquareByFace(mesh: Mesh, face: Face, overlayColor: ColorDefinition, opacity: number) {
@@ -344,7 +352,6 @@ export abstract class GeometryUtils {
     }
 
     public static calculateOverlayColor(baseColor: ColorDefinition, overlayColor: ColorDefinition, overlayOpacity: number): ColorDefinition {
-        // https://stackoverflow.com/a/29039328
         const r = this.calculateOverlayColorBand(baseColor.r, overlayColor.r, overlayOpacity);
         const g = this.calculateOverlayColorBand(baseColor.g, overlayColor.g, overlayOpacity);
         const b = this.calculateOverlayColorBand(baseColor.b, overlayColor.b, overlayOpacity);
@@ -352,6 +359,7 @@ export abstract class GeometryUtils {
     }
 
     public static calculateOverlayColorBand(baseBandValue: number, overlayBandValue: number, overlayOpacity: number): number {
+        // https://stackoverflow.com/a/29039328
         const baseOpacity = 1;
         const targetOpacity = 1;
         const opacityCoeff = 1 / targetOpacity;
