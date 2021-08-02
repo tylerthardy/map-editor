@@ -8,6 +8,10 @@ export class ColorDefinition {
         this.g = g;
         this.b = b;
     }
+
+    toRGBString(): string {
+        return `${Math.floor(this.r * 255)}, ${Math.floor(this.g * 255)}, ${Math.floor(this.b * 255)}`;
+    }
 }
 
 export abstract class ColorDefinitions {
