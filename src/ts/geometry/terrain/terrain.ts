@@ -1,43 +1,50 @@
 import { BufferAttribute, BufferGeometry, Mesh } from "three";
-import { ColorDefinitions } from "../color/color-definition";
+import { ColorDefinition, ColorDefinitions } from "../color/color-definition";
 import { GeometryColorizer } from "../geometry-colorizer";
 import { TerrainGenerator } from "./terrain-generator";
 
 export class Terrain {
-    private SIZE: number = 64
-    private WIDTH: number = this.SIZE;
-    private HEIGHT: number = this.SIZE;
+    private SIZE: number = 1;
+    private WIDTH: number = 64;
+    private HEIGHT: number = 64;
 
     public geometry3d: BufferGeometry;
     public geometry2d: BufferGeometry;
 
-    private _vertices: BufferAttribute;
-    private _color: BufferAttribute;
+    private _tileAltitudes: number[];
+    private _tileColors: ColorDefinition[];
+
+    private _positionAttribute: BufferAttribute;
+    private _colorAttribute: BufferAttribute;
 
     constructor() {
-        this.loadAttributes();
+        this.loadData();
+        this.generateAttributes();
         this.generateGeometries();
     }
 
-    private loadAttributes() {
-        this._vertices = TerrainGenerator.generateVertices(this.WIDTH, this.HEIGHT, 1, 200);
-        const colors = GeometryColorizer.getSolidSquareColor(this.WIDTH * this.HEIGHT, ColorDefinitions.GRAY);
-        const vertexPositionCount = this._vertices.array.length;
-        this._color = GeometryColorizer.generateColorAttribute(vertexPositionCount, colors);
+    private loadData() {
+        this._tileAltitudes = TerrainGenerator.getRandomAltitudes(this.WIDTH, this.HEIGHT, 2);
+        this._tileColors = GeometryColorizer.getSolidSquareColor(this.WIDTH * this.HEIGHT, ColorDefinitions.GRAY);
+    }
+
+    private generateAttributes() {
+        this._positionAttribute = TerrainGenerator.generateAltitudeVertices(this._tileAltitudes, this.WIDTH, this.HEIGHT, this.SIZE);
+        this._colorAttribute = GeometryColorizer.generateColorAttribute(this._tileColors);
     }
 
     private generateGeometries() {
         this.geometry3d = new BufferGeometry();
-        this.geometry3d.attributes.position = this._vertices;
-        this.geometry3d.attributes.color = this._color;
+        this.geometry3d.attributes.position = this._positionAttribute;
+        this.geometry3d.attributes.color = this._colorAttribute;
         this.geometry3d.computeVertexNormals();
         this.geometry3d.attributes.position.needsUpdate = true;
         this.geometry3d.attributes.color.needsUpdate = true;
 
         this.geometry2d = new BufferGeometry();
         this.geometry2d.copy(this.geometry3d);
-        this.geometry2d.attributes.position = TerrainGenerator.flattenVertices(this._vertices)
-        this.geometry2d.attributes.color = this._color;
+        this.geometry2d.attributes.position = TerrainGenerator.flattenVertices(this._positionAttribute)
+        this.geometry2d.attributes.color = this._colorAttribute;
         this.geometry3d.attributes.position.needsUpdate = true;
         this.geometry3d.attributes.color.needsUpdate = true;
     }

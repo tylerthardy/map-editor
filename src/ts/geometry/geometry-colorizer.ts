@@ -3,8 +3,9 @@ import { ColorDefinition, ColorDefinitions } from "./color/color-definition";
 
 // TODO: Clean up and make tile methods based on generateColorAttribute
 export abstract class GeometryColorizer {
-    static generateColorAttribute(vertexPositionCount: number, colors: ColorDefinition[]): BufferAttribute {
-        const bufferAttribute = new BufferAttribute( new Float32Array( vertexPositionCount * 3 ), 3 );
+    static generateColorAttribute(colors: ColorDefinition[]): BufferAttribute {
+        // Each vertex has 3 color values (r, g, b)
+        const bufferAttribute = new BufferAttribute( new Float32Array( colors.length * 3 ), 3 );
         colors.forEach((cd, i) => bufferAttribute.setXYZ(i, cd.r, cd.g, cd.b));
         return bufferAttribute;
     }
