@@ -4,12 +4,12 @@ import { GeometryColorizer } from "../geometry-colorizer";
 import { TerrainGenerator } from "./terrain-generator";
 
 export class Terrain {
-    private SIZE: number = 1;
-    private WIDTH: number = 64;
-    private HEIGHT: number = 64;
-
+    public HEIGHT: number = 5;
+    public WIDTH: number = 5;
     public geometry3d: BufferGeometry;
     public geometry2d: BufferGeometry;
+
+    private SIZE: number = 1;
 
     private _tileAltitudes: number[];
     private _tileColors: ColorDefinition[];

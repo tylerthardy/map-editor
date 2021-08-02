@@ -1,6 +1,5 @@
 import { ComponentContainer, GoldenLayout, LayoutConfig } from 'golden-layout';
 import { MeshBasicMaterial, MeshStandardMaterial } from "three";
-import { Terrain } from './geometry/terrain/terrain';
 import { _terrainService } from './geometry/terrain/terrain.service';
 import { _keyService } from './ui/key.service';
 import { Terrain2DViewport } from "./viewports/terrain-2d-viewport";

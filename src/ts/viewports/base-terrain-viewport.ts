@@ -12,6 +12,7 @@ export class BaseTerrainViewport {
     private name: string;
 
     private terrainMaterial: Material;
+    private terrain: Terrain;
     protected terrainGeometry: BufferGeometry;
     private terrainMesh: Mesh;
 
@@ -32,6 +33,7 @@ export class BaseTerrainViewport {
     constructor(config: BaseTerrainViewportConfig) {
         this.parent = config.parent;
         this.name = config.name;
+        this.terrain = config.terrain;
         this.terrainMaterial = config.terrainMaterial;
     }
 
@@ -290,13 +292,17 @@ export class BaseTerrainViewport {
         this.highlightMousePosition(face, mesh, color);
     }
 
+    private getFaceXY(face: Face): Vector2 {
+        const tileIndex = Math.floor(face.a / 6);
+        const x = tileIndex % this.terrain.WIDTH;
+        const y = Math.floor(tileIndex / this.terrain.WIDTH);
+        return new Vector2(x, y);
+    }
+
     private highlightMousePosition(face: Face, mesh: Mesh, color: ColorDefinition) {
         this.highlightedSquareTriangle = face;
-        this.highlightedSquareOriginalColor = new ColorDefinition(
-            mesh.geometry.attributes.color.getX(face.a),
-            mesh.geometry.attributes.color.getY(face.a),
-            mesh.geometry.attributes.color.getZ(face.a)
-        );
+        const tileCoords = this.getFaceXY(face);
+        this.highlightedSquareOriginalColor = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
         GeometryColorUtils.tintColorSquareByFace(mesh, face, color, 0.4);
     }
 
