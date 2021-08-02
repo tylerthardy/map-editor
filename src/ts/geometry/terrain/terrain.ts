@@ -23,9 +23,17 @@ export class Terrain {
         this.generateGeometries();
     }
 
+    public getTileColor(x: number, y: number): ColorDefinition {
+        if (x >= this.WIDTH || y >= this.HEIGHT || x < 0 || y < 0) throw new Error("Invalid dimension");
+
+        const tile = y * x + x;
+        const vertex = tile * 3 * 2;
+        return this._tileColors[vertex];
+    }
+
     private loadData() {
         this._tileAltitudes = TerrainGenerator.getRandomAltitudes(this.WIDTH, this.HEIGHT, 2);
-        this._tileColors = GeometryColorizer.getSolidSquareColor(this.WIDTH * this.HEIGHT, ColorDefinitions.GRAY);
+        this._tileColors = GeometryColorizer.getRandomSquareColors(this.WIDTH * this.HEIGHT);
     }
 
     private generateAttributes() {
