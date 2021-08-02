@@ -47,7 +47,7 @@ export class App {
             viewport3d = new Terrain3DViewport({
                 name: 'terrain3dViewport',
                 parent: c.element,
-                terrainGeometry: _terrainService.terrain.geometry3d,
+                terrain: _terrainService.terrain,
                 terrainMaterial: new MeshStandardMaterial({
                     vertexColors: true
                 })
@@ -63,7 +63,7 @@ export class App {
             viewport2d = new Terrain2DViewport({
                 name: 'terrain2dViewport',
                 parent: c.element,
-                terrainGeometry: _terrainService.terrain.geometry2d,
+                terrain: _terrainService.terrain,
                 terrainMaterial: new MeshBasicMaterial({
                     vertexColors: true
                 }),

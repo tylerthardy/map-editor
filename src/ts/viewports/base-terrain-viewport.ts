@@ -2,6 +2,7 @@ import { AxesHelper, BufferGeometry, Face, Material, Mesh, PerspectiveCamera, Po
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Pane } from "tweakpane";
 import { ColorDefinition, ColorDefinitions } from "../geometry/color/color-definition";
+import { Terrain } from "../geometry/terrain/terrain";
 import { _terrainService } from "../geometry/terrain/terrain.service";
 import { _keyService } from "../ui/key.service";
 
@@ -31,7 +32,6 @@ export class BaseTerrainViewport {
     constructor(config: BaseTerrainViewportConfig) {
         this.parent = config.parent;
         this.name = config.name;
-        this.terrainGeometry = config.terrainGeometry;
         this.terrainMaterial = config.terrainMaterial;
     }
 
@@ -370,6 +370,6 @@ export abstract class GeometryColorUtils {
 export interface BaseTerrainViewportConfig {
     name: string;
     parent: HTMLElement;
+    terrain: Terrain;
     terrainMaterial: Material;
-    terrainGeometry: BufferGeometry;
 }
