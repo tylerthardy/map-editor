@@ -9,8 +9,30 @@ export class ColorDefinition {
         this.b = b;
     }
 
-    toRGBString(): string {
-        return `${Math.floor(this.r * 255)}, ${Math.floor(this.g * 255)}, ${Math.floor(this.b * 255)}`;
+    toString() {
+        return this.toHexString();
+    }
+
+    toRGB(): { r: number, g: number, b: number} {
+        return {
+            r: Math.floor(this.r * 255),
+            g: Math.floor(this.g * 255),
+            b: Math.floor(this.b * 255)
+        };
+    }
+
+    toHexString(): string {
+        const rgb = this.toRGB();
+        return this.rgbToHex(rgb.r, rgb.g, rgb.b);
+    }
+
+    private componentToHex(c: number) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    private rgbToHex(r: number, g: number, b: number) {
+        return "#" + this.componentToHex(r) + this.componentToHex(g) + this.componentToHex(b);
     }
 }
 
