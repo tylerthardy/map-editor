@@ -5,6 +5,7 @@ import { ColorDefinition, ColorDefinitions } from "../geometry/color/color-defin
 import { Terrain } from "../geometry/terrain/terrain";
 import { _terrainService } from "../geometry/terrain/terrain.service";
 import { _keyService } from "../ui/key.service";
+import { ColorUtils } from "../util/color";
 
 export class BaseTerrainViewport {
     private parent: HTMLElement;
@@ -346,23 +347,8 @@ export abstract class GeometryColorUtils {
             mesh.geometry.attributes.color.getZ(face.a)
         );
 
-        const tintedColor = this.calculateOverlayColor(baseColor, overlayColor, opacity);
+        const tintedColor = ColorUtils.calculateOverlayColor(baseColor, overlayColor, opacity);
         this.colorSquareByFace(mesh, face, tintedColor);
-    }
-
-    public static calculateOverlayColor(baseColor: ColorDefinition, overlayColor: ColorDefinition, overlayOpacity: number): ColorDefinition {
-        const r = this.calculateOverlayColorBand(baseColor.r, overlayColor.r, overlayOpacity);
-        const g = this.calculateOverlayColorBand(baseColor.g, overlayColor.g, overlayOpacity);
-        const b = this.calculateOverlayColorBand(baseColor.b, overlayColor.b, overlayOpacity);
-        return new ColorDefinition(r, g, b);
-    }
-
-    public static calculateOverlayColorBand(baseBandValue: number, overlayBandValue: number, overlayOpacity: number): number {
-        // https://stackoverflow.com/a/29039328
-        const baseOpacity = 1;
-        const targetOpacity = 1;
-        const opacityCoeff = 1 / targetOpacity;
-        return opacityCoeff * (overlayBandValue * overlayOpacity + baseBandValue * baseOpacity * (1 - overlayOpacity));
     }
 }
 
