@@ -280,75 +280,38 @@ export class BaseTerrainViewport {
         }
 
         if (this.mouseDown && !this.orbitControls.enabled) {
-            this.paintWithMouse(mesh, hit.face, ColorDefinitions.YELLOW);
+            this.paintWithMouse(hit.face, ColorDefinitions.YELLOW);
         }
 
-        this.drawMouseHighlight(mesh, hit.face, ColorDefinitions.RED);
+        this.drawMouseHighlight(hit.face, ColorDefinitions.RED);
     }
 
-    // FIXME: This is a hacky solution. We should be maintaining the color of a tile in a separate area, not as part of a state machine.
-    private drawMouseHighlight(mesh: Mesh, face: Face, color: ColorDefinition) {
-        this.unhighlightMousePosition(mesh);
-        this.highlightMousePosition(face, mesh, color);
+    // FIXME: This is a hacky solution. We should be maintaining the highlighted tile in a separate area, not as part of a state machine.
+    private drawMouseHighlight(face: Face, color: ColorDefinition) {
+        this.unhighlightMousePosition();
+        this.highlightMousePosition(face, color);
     }
 
-    private highlightMousePosition(face: Face, mesh: Mesh, color: ColorDefinition) {
+    private highlightMousePosition(face: Face, tint: ColorDefinition) {
         this.highlightedSquareTriangle = face;
-        GeometryColorUtils.tintColorSquareByFace(mesh, face, color, 0.4);
+        const tileCoords = this.terrain.getFaceXY(face);
+        const color = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
+        const tintedColor = ColorUtils.calculateOverlayColor(color, tint, 0.4);
+        this.terrain.setTileAttributeColor(tileCoords.x, tileCoords.y, tintedColor);
     }
 
-    private unhighlightMousePosition(mesh: Mesh) {
+    private unhighlightMousePosition() {
         if (!this.highlightedSquareTriangle) {
             return;
         }
 
         const tileCoords = this.terrain.getFaceXY(this.highlightedSquareTriangle);
-        const color = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
-        GeometryColorUtils.colorSquareByFace(mesh, this.highlightedSquareTriangle, color);
+        this.terrain.resetTileAttributeColor(tileCoords.x, tileCoords.y);
     }
 
-    private paintWithMouse(mesh: Mesh, face: Face, color: ColorDefinition) {
+    private paintWithMouse(face: Face, color: ColorDefinition) {
         const tileCoords = this.terrain.getFaceXY(face);
         this.terrain.setTileColor(tileCoords.x, tileCoords.y, color);
-    }
-}
-
-// TODO: Move these as responsibilities of the terrain layer. So we can determine the x/y coords of the square, rather than always relying on the faces of geometry.
-export abstract class GeometryColorUtils {
-    public static colorSquareByFace(mesh: Mesh, face: Face, color: ColorDefinition) {
-        this.colorFace(mesh, face, color);
-        if (face.a % 6 === 0) {
-            this.colorVertexByIndex(mesh, face.a + 3, color);
-            this.colorVertexByIndex(mesh, face.b + 3, color);
-            this.colorVertexByIndex(mesh, face.c + 3, color);
-        }
-        if (face.a % 6 === 3) {
-            this.colorVertexByIndex(mesh, face.a - 3, color);
-            this.colorVertexByIndex(mesh, face.b - 3, color);
-            this.colorVertexByIndex(mesh, face.c - 3, color);
-        }
-        mesh.geometry.attributes.color.needsUpdate = true;
-    }
-
-    public static colorVertexByIndex(mesh: Mesh, index: number, color: ColorDefinition) {
-        mesh.geometry.attributes.color.setXYZ(index, color.r, color.g, color.b);
-    }
-
-    private static colorFace(mesh: Mesh, face: Face, color: ColorDefinition) {
-        this.colorVertexByIndex(mesh, face.a, color);
-        this.colorVertexByIndex(mesh, face.b, color);
-        this.colorVertexByIndex(mesh, face.c, color);
-    }
-
-    public static tintColorSquareByFace(mesh: Mesh, face: Face, overlayColor: ColorDefinition, opacity: number) {
-        const baseColor = new ColorDefinition(
-            mesh.geometry.attributes.color.getX(face.a),
-            mesh.geometry.attributes.color.getY(face.a),
-            mesh.geometry.attributes.color.getZ(face.a)
-        );
-
-        const tintedColor = ColorUtils.calculateOverlayColor(baseColor, overlayColor, opacity);
-        this.colorSquareByFace(mesh, face, tintedColor);
     }
 }
 

@@ -31,7 +31,7 @@ export class Terrain {
     }
 
     public setTileColor(x: number, y: number, color: ColorDefinition): void {
-        if (x >= this.WIDTH || y >= this.HEIGHT || x < 0 || y < 0) throw new Error("Invalid dimension");
+        this.validateValidCoordinates(x, y);
 
         const tileIndex = y * this.WIDTH + x;
         const vertexIndex = tileIndex * 3 * 2;
@@ -39,20 +39,36 @@ export class Terrain {
         // Set the data
         this._tileColors[vertexIndex] = color;
 
-        // Update the attribute
+        this.setTileAttributeColor(x, y, color);
+    }
+
+    public resetTileAttributeColor(x: number, y: number): void {
+        this.setTileAttributeColor(x, y, this.getTileColor(x, y));
+    }
+
+    public setTileAttributeColor(x: number, y: number, color: ColorDefinition): void {
+        this.validateValidCoordinates(x, y);
+
+        const tileIndex = y * this.WIDTH + x;
+        const vertexIndex = tileIndex * 3 * 2;
+
         for(let index = vertexIndex; index < vertexIndex + 6; index++)
         {
-            this._colorAttribute.setXYZ(vertexIndex, color.r, color.g, color.b);
+            this._colorAttribute.setXYZ(index, color.r, color.g, color.b);
         }
         this._colorAttribute.needsUpdate = true;
     }
 
     public getTileColor(x: number, y: number): ColorDefinition {
-        if (x >= this.WIDTH || y >= this.HEIGHT || x < 0 || y < 0) throw new Error("Invalid dimension");
+        this.validateValidCoordinates(x, y);
 
         const tileIndex = y * this.WIDTH + x;
         const vertex = tileIndex * 3 * 2;
         return this._tileColors[vertex];
+    }
+
+    private validateValidCoordinates(x: number, y: number): void {
+        if (x >= this.WIDTH || y >= this.HEIGHT || x < 0 || y < 0) throw new Error("Invalid dimension");
     }
 
     private loadData() {
