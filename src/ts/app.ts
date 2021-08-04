@@ -21,14 +21,14 @@ export class App {
                     {
                         type: 'component',
                         title: '2D Editor',
-                        width: 50,
+                        width: 40,
                         componentType: 'terrain2dViewport',
                         componentState: {}
                     },
                     {
                         type: 'component',
                         title: '3D Editor',
-                        width: 50,
+                        width: 60,
                         componentType: 'terrain3dViewport',
                         componentState: {}
                     },
