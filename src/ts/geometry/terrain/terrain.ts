@@ -24,6 +24,23 @@ export class Terrain {
         //this.setTileColor(3, 3, ColorDefinitions.CYAN);
     }
 
+    public setTileColor(x: number, y: number, color: ColorDefinition): void {
+        if (x >= this.WIDTH || y >= this.HEIGHT || x < 0 || y < 0) throw new Error("Invalid dimension");
+
+        const tileIndex = y * this.WIDTH + x;
+        const vertexIndex = tileIndex * 3 * 2;
+
+        // Set the data
+        this._tileColors[vertexIndex] = color;
+
+        // Update the attribute
+        for(let index = vertexIndex; index < vertexIndex + 6; index++)
+        {
+            this._colorAttribute.setXYZ(vertexIndex, color.r, color.g, color.b);
+        }
+        this._colorAttribute.needsUpdate = true;
+    }
+
     public getTileColor(x: number, y: number): ColorDefinition {
         if (x >= this.WIDTH || y >= this.HEIGHT || x < 0 || y < 0) throw new Error("Invalid dimension");
 

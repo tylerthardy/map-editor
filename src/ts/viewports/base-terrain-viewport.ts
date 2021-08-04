@@ -25,7 +25,6 @@ export class BaseTerrainViewport {
     private mouse: Vector2 = new Vector2();
     private mouseDown: boolean;
     private highlightedSquareTriangle: Face;
-    private highlightedSquareOriginalColor: ColorDefinition;
 
     private pane: Pane;
     protected animationEvents: ((z: any) => void)[] = [];
@@ -280,7 +279,7 @@ export class BaseTerrainViewport {
         }
 
         if (this.mouseDown && !this.orbitControls.enabled) {
-            this.paintWithMouse(mesh, hit.face, ColorDefinitions.RED);
+            this.paintWithMouse(mesh, hit.face, ColorDefinitions.YELLOW);
         }
 
         this.drawMouseHighlight(mesh, hit.face, ColorDefinitions.RED);
@@ -301,8 +300,6 @@ export class BaseTerrainViewport {
 
     private highlightMousePosition(face: Face, mesh: Mesh, color: ColorDefinition) {
         this.highlightedSquareTriangle = face;
-        const tileCoords = this.getFaceXY(face);
-        this.highlightedSquareOriginalColor = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
         GeometryColorUtils.tintColorSquareByFace(mesh, face, color, 0.4);
     }
 
@@ -311,11 +308,14 @@ export class BaseTerrainViewport {
             return;
         }
 
-        GeometryColorUtils.colorSquareByFace(mesh, this.highlightedSquareTriangle, this.highlightedSquareOriginalColor);
+        const tileCoords = this.getFaceXY(this.highlightedSquareTriangle);
+        const color = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
+        GeometryColorUtils.colorSquareByFace(mesh, this.highlightedSquareTriangle, color);
     }
 
     private paintWithMouse(mesh: Mesh, face: Face, color: ColorDefinition) {
-        GeometryColorUtils.colorSquareByFace(mesh, face, ColorDefinitions.RED);
+        const tileCoords = this.getFaceXY(face);
+        this.terrain.setTileColor(tileCoords.x, tileCoords.y, color);
     }
 }
 
