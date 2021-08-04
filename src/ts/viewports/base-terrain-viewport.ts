@@ -291,13 +291,6 @@ export class BaseTerrainViewport {
         this.highlightMousePosition(face, mesh, color);
     }
 
-    private getFaceXY(face: Face): Vector2 {
-        const tileIndex = Math.floor(face.a / 6);
-        const x = tileIndex % this.terrain.WIDTH;
-        const y = Math.floor(tileIndex / this.terrain.WIDTH);
-        return new Vector2(x, y);
-    }
-
     private highlightMousePosition(face: Face, mesh: Mesh, color: ColorDefinition) {
         this.highlightedSquareTriangle = face;
         GeometryColorUtils.tintColorSquareByFace(mesh, face, color, 0.4);
@@ -308,13 +301,13 @@ export class BaseTerrainViewport {
             return;
         }
 
-        const tileCoords = this.getFaceXY(this.highlightedSquareTriangle);
+        const tileCoords = this.terrain.getFaceXY(this.highlightedSquareTriangle);
         const color = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
         GeometryColorUtils.colorSquareByFace(mesh, this.highlightedSquareTriangle, color);
     }
 
     private paintWithMouse(mesh: Mesh, face: Face, color: ColorDefinition) {
-        const tileCoords = this.getFaceXY(face);
+        const tileCoords = this.terrain.getFaceXY(face);
         this.terrain.setTileColor(tileCoords.x, tileCoords.y, color);
     }
 }

@@ -1,4 +1,4 @@
-import { BufferAttribute, BufferGeometry, Mesh } from "three";
+import { BufferAttribute, BufferGeometry, Face, Mesh, Vector2 } from "three";
 import { ColorDefinition, ColorDefinitions } from "../color/color-definition";
 import { GeometryColorizer } from "../geometry-colorizer";
 import { TerrainGenerator } from "./terrain-generator";
@@ -21,7 +21,13 @@ export class Terrain {
         this.loadData();
         this.generateAttributes();
         this.generateGeometries();
-        //this.setTileColor(3, 3, ColorDefinitions.CYAN);
+    }
+
+    public getFaceXY(face: Face): Vector2 {
+        const tileIndex = Math.floor(face.a / 6);
+        const x = tileIndex % this.WIDTH;
+        const y = Math.floor(tileIndex / this.WIDTH);
+        return new Vector2(x, y);
     }
 
     public setTileColor(x: number, y: number, color: ColorDefinition): void {
