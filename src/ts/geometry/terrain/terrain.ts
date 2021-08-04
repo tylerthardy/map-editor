@@ -21,13 +21,14 @@ export class Terrain {
         this.loadData();
         this.generateAttributes();
         this.generateGeometries();
+        //this.setTileColor(3, 3, ColorDefinitions.CYAN);
     }
 
     public getTileColor(x: number, y: number): ColorDefinition {
         if (x >= this.WIDTH || y >= this.HEIGHT || x < 0 || y < 0) throw new Error("Invalid dimension");
 
-        const tile = y * x + x;
-        const vertex = tile * 3 * 2;
+        const tileIndex = y * this.WIDTH + x;
+        const vertex = tileIndex * 3 * 2;
         return this._tileColors[vertex];
     }
 
