@@ -1,5 +1,5 @@
 import { BufferGeometry, BufferAttribute, Color } from "three";
-import { ColorDefinition, ColorDefinitions } from "./color/color-definition";
+import { ColorDefinition, ColorDefinitions } from "./color-definition";
 
 export abstract class GeometryColorizer {
     static generateColorAttribute(colors: ColorDefinition[]): BufferAttribute {

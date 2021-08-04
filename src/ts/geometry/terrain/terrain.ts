@@ -1,6 +1,6 @@
 import { BufferAttribute, BufferGeometry, Face, Mesh, Vector2 } from "three";
 import { ColorDefinition, ColorDefinitions } from "../color/color-definition";
-import { GeometryColorizer } from "../geometry-colorizer";
+import { GeometryColorizer } from "../color/geometry-colorizer";
 import { TerrainGenerator } from "./terrain-generator";
 
 export class Terrain {
