@@ -6,15 +6,24 @@
     <title>Three.js Testing</title>
     <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
     <script type="text/javascript" src="https://golden-layout.com/files/latest/js/goldenlayout.min.js"></script>
-    <link type="text/css" rel="stylesheet" href="./styles.css" />
+    <link type="text/css" rel="stylesheet" href="./styles.proper.css" />
     <link type="text/css" rel="stylesheet" href="https://golden-layout.com/files/latest/css/goldenlayout-base.css" />
     <link type="text/css" rel="stylesheet"
         href="https://golden-layout.com/files/latest/css/goldenlayout-dark-theme.css" />
 </head>
 
 <body>
-    <div id="container"></div>
-    <button onclick="window.goToProperUi()">Go to Proper UI</button>
+    <section id="bodySection">
+        <section id="controls">
+            <select id="typeSelect">
+                <option>color</option>
+                <option>boolean</option>
+            </select>
+            <button id="addComponentButton">Add Component</button>
+        </section>
+        <section id="layoutContainer">
+        </section>
+    </section>
     <script src="./bundle.js"></script>
 </body>
 
