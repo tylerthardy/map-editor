@@ -1,8 +1,9 @@
 import { ComponentContainer, GoldenLayout, JsonValue, LogicalZIndex, ResolvedComponentItemConfig } from "golden-layout";
-import { BooleanComponent } from "./ui/components/boolean-component";
-import { ColorComponent } from "./ui/components/color-component";
+import { inject, injectable } from "inversify";
+import { BrushComponent } from "./ui/components/brush-component/brush-component";
 import { ComponentBase } from "./ui/components/component-base";
 
+@injectable()
 export class ProperApp {
     private _layoutElement: HTMLElement;
     private _goldenLayout: GoldenLayout;
@@ -16,7 +17,9 @@ export class ProperApp {
     private _addComponentButtonClickListener = () => this.handleAddComponentButtonClick();
     private _typeSelect: HTMLSelectElement;
 
-    constructor() { }
+    constructor(
+        @inject("Factory<BrushComponent>") private _brushComponentFactory: (container: ComponentContainer, state: JsonValue | undefined, virtual: boolean) => BrushComponent
+    ) {}
 
     init() {
         const layoutElement = document.querySelector('#layoutContainer') as HTMLElement;
@@ -40,12 +43,10 @@ export class ProperApp {
         this._goldenLayout.addComponent(componentType);
     }
 
+    // TODO: Refactor this out - either abstract or into a place where components can be added (this is copied from golden-layout docs)
     private createComponent(container: ComponentContainer, componentTypeName: string, state: JsonValue | undefined, virtual: boolean) {
         switch (componentTypeName) {
-            case ColorComponent.typeName: return new ColorComponent(container, state, virtual);
-            //case TextComponent.typeName: return new TextComponent(container, state, virtual);
-            case BooleanComponent.typeName: return new BooleanComponent(container, state, virtual);
-            //case EventComponent.typeName: return new EventComponent(container, state, virtual);
+            case BrushComponent.typeName: return this._brushComponentFactory(container, state, virtual);
             default:
                 throw new Error('createComponent: Unexpected componentTypeName: ' + componentTypeName);
         }
