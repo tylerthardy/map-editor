@@ -1,6 +1,7 @@
 import { ComponentContainer, GoldenLayout, LayoutConfig } from 'golden-layout';
 import { MeshBasicMaterial, MeshStandardMaterial } from "three";
-import { _terrainService } from './geometry/terrain.service';
+import { _terrainService } from './geometry/terrain/terrain.service';
+import { _keyService } from './ui/key.service';
 import { Terrain2DViewport } from "./viewports/terrain-2d-viewport";
 import { Terrain3DViewport } from "./viewports/terrain-3d-viewport";
 
@@ -20,14 +21,14 @@ export class App {
                     {
                         type: 'component',
                         title: '2D Editor',
-                        width: 50,
+                        width: 40,
                         componentType: 'terrain2dViewport',
                         componentState: {}
                     },
                     {
                         type: 'component',
                         title: '3D Editor',
-                        width: 50,
+                        width: 60,
                         componentType: 'terrain3dViewport',
                         componentState: {}
                     },
@@ -45,7 +46,7 @@ export class App {
             viewport3d = new Terrain3DViewport({
                 name: 'terrain3dViewport',
                 parent: c.element,
-                terrainGeometry: _terrainService.terrain3dGeometry,
+                terrain: _terrainService.terrain,
                 terrainMaterial: new MeshStandardMaterial({
                     vertexColors: true
                 })
@@ -61,7 +62,7 @@ export class App {
             viewport2d = new Terrain2DViewport({
                 name: 'terrain2dViewport',
                 parent: c.element,
-                terrainGeometry: _terrainService.terrain2dGeometry,
+                terrain: _terrainService.terrain,
                 terrainMaterial: new MeshBasicMaterial({
                     vertexColors: true
                 }),

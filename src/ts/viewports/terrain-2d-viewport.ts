@@ -9,6 +9,7 @@ export class Terrain2DViewport extends BaseTerrainViewport {
 
     constructor(config: Terrain2DViewportConfig) {
         super(config);
+        this.terrainGeometry = config.terrain.geometry2d;
         this.orbitControls3D = config.orbitControls3D;
         this.init();
     }

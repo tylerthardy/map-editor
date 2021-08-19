@@ -3,6 +3,7 @@ import { BaseTerrainViewport, BaseTerrainViewportConfig } from "./base-terrain-v
 export class Terrain3DViewport extends BaseTerrainViewport {
     constructor(config: Terrain3DViewportConfig) {
         super(config);
+        this.terrainGeometry = config.terrain.geometry3d;
         super.init();
     }
 }

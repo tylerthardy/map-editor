@@ -1,8 +1,11 @@
-import { AxesHelper, BufferGeometry, Material, Mesh, PerspectiveCamera, PointLight, PointLightHelper, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from "three";
+import { AxesHelper, BufferGeometry, Face, Material, Mesh, PerspectiveCamera, PointLight, PointLightHelper, Raycaster, Scene, Vector2, Vector3, WebGLRenderer } from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 import { Pane } from "tweakpane";
 import { ColorDefinition, ColorDefinitions } from "../geometry/color/color-definition";
+import { Terrain } from "../geometry/terrain/terrain";
+import { _terrainService } from "../geometry/terrain/terrain.service";
 import { _keyService } from "../ui/key.service";
+import { ColorUtils } from "../util/color";
 
 export class BaseTerrainViewport {
     private parent: HTMLElement;
@@ -10,6 +13,7 @@ export class BaseTerrainViewport {
     private name: string;
 
     private terrainMaterial: Material;
+    private terrain: Terrain;
     protected terrainGeometry: BufferGeometry;
     private terrainMesh: Mesh;
 
@@ -21,6 +25,7 @@ export class BaseTerrainViewport {
     private raycaster: Raycaster = new Raycaster();
     private mouse: Vector2 = new Vector2();
     private mouseDown: boolean;
+    private highlightedSquareTriangle: Face;
 
     private pane: Pane;
     protected animationEvents: ((z: any) => void)[] = [];
@@ -28,7 +33,7 @@ export class BaseTerrainViewport {
     constructor(config: BaseTerrainViewportConfig) {
         this.parent = config.parent;
         this.name = config.name;
-        this.terrainGeometry = config.terrainGeometry;
+        this.terrain = config.terrain;
         this.terrainMaterial = config.terrainMaterial;
     }
 
@@ -70,7 +75,7 @@ export class BaseTerrainViewport {
         this.scene.add(this.terrainMesh);
 
         // Animation loop
-        this.animationEvents.push((time) => this.paintWithMouse());
+        this.animationEvents.push((time) => this.processMouse());
 
         // Rendering
         this.renderer.setSize(this.domElement.offsetWidth, this.domElement.offsetHeight);
@@ -258,43 +263,61 @@ export class BaseTerrainViewport {
         return viewport;
     }
 
-    private paintWithMouse() {
-        if (!this.mouseDown || this.orbitControls.enabled) {
-            return;
-        }
-
+    private processMouse() {
         this.raycaster.setFromCamera(this.mouse, this.camera);
-
         const recursiveFlag = false;
         var intersects = this.raycaster.intersectObjects([this.terrainMesh], recursiveFlag);
 
-        if (intersects.length > 0) {
-            const hit = intersects[0];
-            const mesh: Mesh = hit.object as Mesh;
-            const color: ColorDefinition = ColorDefinitions.RED;
-
-            // TODO: There's probably a way to clean this up mathematically
-            mesh.geometry.attributes.color.setXYZ(hit.face.a, color.r, color.g, color.b);
-            mesh.geometry.attributes.color.setXYZ(hit.face.b, color.r, color.g, color.b);
-            mesh.geometry.attributes.color.setXYZ(hit.face.c, color.r, color.g, color.b);
-            if (hit.face.a % 6 === 0) {
-                mesh.geometry.attributes.color.setXYZ(hit.face.a + 3, color.r, color.g, color.b);
-                mesh.geometry.attributes.color.setXYZ(hit.face.b + 3, color.r, color.g, color.b);
-                mesh.geometry.attributes.color.setXYZ(hit.face.c + 3, color.r, color.g, color.b);
-            }
-            if (hit.face.a % 6 === 3) {
-                mesh.geometry.attributes.color.setXYZ(hit.face.a - 3, color.r, color.g, color.b);
-                mesh.geometry.attributes.color.setXYZ(hit.face.b - 3, color.r, color.g, color.b);
-                mesh.geometry.attributes.color.setXYZ(hit.face.c - 3, color.r, color.g, color.b);
-            }
-            mesh.geometry.attributes.color.needsUpdate = true;
+        if (intersects.length === 0) {
+            return;
         }
+
+        const hit = intersects[0];
+        const mesh: Mesh = hit.object as Mesh;
+        
+        if (!hit.face) {
+            return;
+        }
+
+        if (this.mouseDown && !this.orbitControls.enabled) {
+            this.paintWithMouse(hit.face, ColorDefinitions.YELLOW);
+        }
+
+        this.drawMouseHighlight(hit.face, ColorDefinitions.RED);
+    }
+
+    // FIXME: This is a hacky solution. We should be maintaining the highlighted tile in a separate area, not as part of a state machine.
+    private drawMouseHighlight(face: Face, color: ColorDefinition) {
+        this.unhighlightMousePosition();
+        this.highlightMousePosition(face, color);
+    }
+
+    private highlightMousePosition(face: Face, tint: ColorDefinition) {
+        this.highlightedSquareTriangle = face;
+        const tileCoords = this.terrain.getFaceXY(face);
+        const color = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
+        const tintedColor = ColorUtils.calculateOverlayColor(color, tint, 0.4);
+        this.terrain.setTileAttributeColor(tileCoords.x, tileCoords.y, tintedColor);
+    }
+
+    private unhighlightMousePosition() {
+        if (!this.highlightedSquareTriangle) {
+            return;
+        }
+
+        const tileCoords = this.terrain.getFaceXY(this.highlightedSquareTriangle);
+        this.terrain.resetTileAttributeColor(tileCoords.x, tileCoords.y);
+    }
+
+    private paintWithMouse(face: Face, color: ColorDefinition) {
+        const tileCoords = this.terrain.getFaceXY(face);
+        this.terrain.setTileColor(tileCoords.x, tileCoords.y, color);
     }
 }
 
 export interface BaseTerrainViewportConfig {
     name: string;
     parent: HTMLElement;
+    terrain: Terrain;
     terrainMaterial: Material;
-    terrainGeometry: BufferGeometry;
 }
