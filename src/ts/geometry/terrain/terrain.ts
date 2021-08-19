@@ -73,7 +73,7 @@ export class Terrain {
 
     private loadData() {
         this._tileAltitudes = TerrainGenerator.getRandomAltitudes(this.WIDTH, this.HEIGHT, 2);
-        this._tileColors = GeometryColorizer.getRandomSquareColors(this.WIDTH * this.HEIGHT);
+        this._tileColors = GeometryColorizer.getSolidSquareColor(this.WIDTH * this.HEIGHT, ColorDefinitions.GRAY);
     }
 
     private generateAttributes() {
