@@ -23,7 +23,7 @@ Object.defineProperty(Object3D.prototype, 'trackedPointers', {
   get() {
     if (!this._trackedPointers) this._trackedPointers = {};
     return this._trackedPointers;
-  },
+  }
 });
 
 /**
@@ -32,7 +32,7 @@ Object.defineProperty(Object3D.prototype, 'trackedPointers', {
  * @param {Raycaster} raycaster Raycaster object, get from THREE.Raycaster
  * @return {Object|Boolean} had pass hit-test
  */
-Object3D.prototype.raycastTest = function(raycaster) {
+Object3D.prototype.raycastTest = function (raycaster) {
   const result = [];
   this.raycast(raycaster, result);
 

@@ -23,7 +23,7 @@ export default class InteractionTrackingData {
     if (yn) {
       this._flags = this._flags | flag;
     } else {
-      this._flags = this._flags & (~flag);
+      this._flags = this._flags & ~flag;
     }
   }
 
@@ -123,5 +123,5 @@ InteractionTrackingData.FLAGS = Object.freeze({
   NONE: 0,
   OVER: 1 << 0,
   LEFT_DOWN: 1 << 1,
-  RIGHT_DOWN: 1 << 2,
+  RIGHT_DOWN: 1 << 2
 });

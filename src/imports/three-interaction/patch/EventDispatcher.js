@@ -8,7 +8,7 @@ import { Utils } from '../utils/Utils.js';
  * @param {Function} fn callback
  * @return {this} this
  */
-EventDispatcher.prototype.on = function(type, fn) {
+EventDispatcher.prototype.on = function (type, fn) {
   if (!Utils.isFunction(fn)) return;
   if (this instanceof Object3D) this.interactive = true;
   this.addEventListener(type, fn);
@@ -22,7 +22,7 @@ EventDispatcher.prototype.on = function(type, fn) {
  * @param {Function} fn callback, which you had bind before
  * @return {this} this
  */
-EventDispatcher.prototype.off = function(type, fn) {
+EventDispatcher.prototype.off = function (type, fn) {
   this.removeEventListener(type, fn);
   return this;
 };
@@ -34,7 +34,7 @@ EventDispatcher.prototype.off = function(type, fn) {
  * @param {Function} fn callback
  * @return {this} this
  */
-EventDispatcher.prototype.once = function(type, fn) {
+EventDispatcher.prototype.once = function (type, fn) {
   if (!Utils.isFunction(fn)) return;
   const cb = (ev) => {
     fn(ev);
@@ -50,7 +50,7 @@ EventDispatcher.prototype.once = function(type, fn) {
  * @param {String} type event type, evnet name
  * @return {this} this
  */
-EventDispatcher.prototype.emit = function(type, ...argument) {
+EventDispatcher.prototype.emit = function (type, ...argument) {
   if (this._listeners === undefined || Utils.isUndefined(this._listeners[type])) return;
   const cbs = this._listeners[type] || [];
   const cache = cbs.slice(0);
@@ -60,4 +60,3 @@ EventDispatcher.prototype.emit = function(type, ...argument) {
   }
   return this;
 };
-

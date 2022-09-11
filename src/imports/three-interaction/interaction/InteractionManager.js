@@ -12,8 +12,8 @@ const MOUSE_POINTER_ID = 'MOUSE';
 const hitTestEvent = {
   target: null,
   data: {
-    global: null,
-  },
+    global: null
+  }
 };
 
 /**
@@ -231,7 +231,7 @@ class InteractionManager extends EventDispatcher {
      */
     this.cursorStyles = {
       default: 'inherit',
-      pointer: 'pointer',
+      pointer: 'pointer'
     };
 
     /**
@@ -848,12 +848,7 @@ class InteractionManager extends EventDispatcher {
             interactionData
           );
 
-          this.processInteractive(
-            interactionEvent,
-            this.scene,
-            this.processPointerOverOut,
-            true
-          );
+          this.processInteractive(interactionEvent, this.scene, this.processPointerOverOut, true);
         }
       }
     }
@@ -1023,7 +1018,6 @@ class InteractionManager extends EventDispatcher {
 
     return hit;
   }
-
 
   /**
    * Is called when the click is pressed down on the renderer element
@@ -1255,7 +1249,7 @@ class InteractionManager extends EventDispatcher {
 
     const isTouch = data.pointerType === 'touch';
 
-    const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
+    const isMouse = data.pointerType === 'mouse' || data.pointerType === 'pen';
 
     // Mouse only
     if (isMouse) {
@@ -1265,7 +1259,7 @@ class InteractionManager extends EventDispatcher {
 
       const test = isRightButton ? flags.RIGHT_DOWN : flags.LEFT_DOWN;
 
-      const isDown = trackingData !== undefined && (trackingData.flags & test);
+      const isDown = trackingData !== undefined && trackingData.flags & test;
 
       if (hit) {
         this.triggerEvent(displayObject, isRightButton ? 'rightup' : 'mouseup', interactionEvent);
@@ -1344,12 +1338,7 @@ class InteractionManager extends EventDispatcher {
 
       const interactive = event.pointerType === 'touch' ? this.moveWhenInside : true;
 
-      this.processInteractive(
-        interactionEvent,
-        this.scene,
-        this.processPointerMove,
-        interactive
-      );
+      this.processInteractive(interactionEvent, this.scene, this.processPointerMove, interactive);
       this.emit('pointermove', interactionEvent);
       if (event.pointerType === 'touch') this.emit('touchmove', interactionEvent);
       if (event.pointerType === 'mouse' || event.pointerType === 'pen') this.emit('mousemove', interactionEvent);
@@ -1375,7 +1364,7 @@ class InteractionManager extends EventDispatcher {
 
     const isTouch = data.pointerType === 'touch';
 
-    const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
+    const isMouse = data.pointerType === 'mouse' || data.pointerType === 'pen';
 
     if (isMouse) {
       this.processPointerOverOut(interactionEvent, displayObject, hit);
@@ -1439,7 +1428,7 @@ class InteractionManager extends EventDispatcher {
 
     const id = interactionEvent.data.identifier;
 
-    const isMouse = (data.pointerType === 'mouse' || data.pointerType === 'pen');
+    const isMouse = data.pointerType === 'mouse' || data.pointerType === 'pen';
 
     let trackingData = displayObject.trackedPointers[id];
 
@@ -1569,7 +1558,7 @@ class InteractionManager extends EventDispatcher {
         left: 0,
         top: 0,
         width: 0,
-        height: 0,
+        height: 0
       };
     } else {
       rect = this.interactionDOMElement.getBoundingClientRect();
@@ -1650,7 +1639,10 @@ class InteractionManager extends EventDispatcher {
 
         normalizedEvents.push(touch);
       }
-    } else if (event instanceof MouseEvent && (!this.supportsPointerEvents || !(event instanceof window.PointerEvent))) {
+    } else if (
+      event instanceof MouseEvent &&
+      (!this.supportsPointerEvents || !(event instanceof window.PointerEvent))
+    ) {
       if (typeof event.isPrimary === 'undefined') event.isPrimary = true;
       if (typeof event.width === 'undefined') event.width = 1;
       if (typeof event.height === 'undefined') event.height = 1;
