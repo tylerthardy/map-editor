@@ -1,0 +1,16 @@
+.viewport-container {
+  position: relative;
+  height: 100%;
+}
+
+.pane-container {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 256px;
+}
+
+.viewport {
+  height: 100%;
+  margin: 5px;
+}
