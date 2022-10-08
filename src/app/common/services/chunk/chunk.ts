@@ -4,13 +4,16 @@ import { Tile } from './tile';
 
 export class Chunk {
   static size: number = 10;
+
+  public terrain: Terrain;
   private tiles: Tile[];
 
   constructor(tiles: Tile[]) {
     this.tiles = tiles;
+    this.terrain = this.generateTerrain();
   }
 
-  getTerrain(): Terrain {
+  private generateTerrain(): Terrain {
     const verticesPerTriangle: number = 3;
     const trianglesPerTile: number = 2;
     const vertexCount: number = Chunk.size * Chunk.size * verticesPerTriangle * trianglesPerTile * 3;

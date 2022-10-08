@@ -9,7 +9,6 @@ export class TerrainService {
   public terrain: Terrain;
 
   constructor(chunkService: ChunkService) {
-    this.terrain = chunkService.createRandomizedChunk().getTerrain();
-    // this.terrain = new Terrain();
+    this.terrain = chunkService.createRandomizedChunk().terrain;
   }
 }
