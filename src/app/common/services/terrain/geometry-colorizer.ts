@@ -1,8 +1,7 @@
 import { BufferAttribute, Color } from 'three';
-import { ColorDefinition, ColorDefinitions } from './color-definition';
 
 export abstract class GeometryColorizer {
-  static generateColorAttribute(colors: ColorDefinition[]): BufferAttribute {
+  static generateColorAttribute(colors: Color[]): BufferAttribute {
     // Each vertex has 3 color values (r, g, b)
     const bufferAttribute = new BufferAttribute(new Float32Array(colors.length * 3), 3);
     colors.forEach((cd, i) => bufferAttribute.setXYZ(i, cd.r, cd.g, cd.b));
@@ -23,8 +22,8 @@ export abstract class GeometryColorizer {
     return bufferAttribute;
   }
 
-  static getSolidSquareColor(numberOfSquares: number, color: ColorDefinition): ColorDefinition[] {
-    let colors: ColorDefinition[] = [];
+  static getSolidSquareColor(numberOfSquares: number, color: Color): Color[] {
+    let colors: Color[] = [];
     for (let i = 0; i < numberOfSquares; i++) {
       for (let vertexIndex = 0; vertexIndex < 6; vertexIndex++) {
         colors.push(color);
@@ -33,23 +32,23 @@ export abstract class GeometryColorizer {
     return colors;
   }
 
-  static getRandomSquareColors(numberOfSquares: number): ColorDefinition[] {
-    let colors: ColorDefinition[] = [];
+  static getRandomSquareColors(numberOfSquares: number): Color[] {
+    let colors: Color[] = [];
     for (let i = 0; i < numberOfSquares; i++) {
       const r = Math.random();
       const g = Math.random();
       const b = Math.random();
       for (let vertexIndex = 0; vertexIndex < 6; vertexIndex++) {
-        colors.push(new ColorDefinition(r, g, b));
+        colors.push(new Color(r, g, b));
       }
     }
     return colors;
   }
 
-  static getTestSquareColors(numberOfSquares: number): ColorDefinition[] {
-    let colors: ColorDefinition[] = [];
+  static getTestSquareColors(numberOfSquares: number): Color[] {
+    let colors: Color[] = [];
     for (let i = 0; i < numberOfSquares; i++) {
-      const colorDefintion = i % 2 ? ColorDefinitions.RED : ColorDefinitions.BLUE;
+      const colorDefintion = i % 2 ? new Color('red') : new Color('blue');
       for (let vertexIndex = 0; vertexIndex < 6; vertexIndex++) {
         colors.push(colorDefintion);
       }

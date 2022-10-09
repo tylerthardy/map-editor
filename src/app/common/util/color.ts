@@ -1,11 +1,11 @@
-import { ColorDefinition } from '../services/terrain/color-definition';
+import { Color } from 'three';
 
 export abstract class ColorUtils {
-  public static tintColor(baseColor: ColorDefinition, tint: ColorDefinition, opacity: number): ColorDefinition {
+  public static tintColor(baseColor: Color, tint: Color, opacity: number): Color {
     const r = this.calculateOverlayColorBand(baseColor.r, tint.r, opacity);
     const g = this.calculateOverlayColorBand(baseColor.g, tint.g, opacity);
     const b = this.calculateOverlayColorBand(baseColor.b, tint.b, opacity);
-    return new ColorDefinition(r, g, b);
+    return new Color(r, g, b);
   }
 
   public static calculateOverlayColorBand(

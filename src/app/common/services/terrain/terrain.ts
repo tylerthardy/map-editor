@@ -1,5 +1,4 @@
-import { BufferAttribute, BufferGeometry, Face, Vector2 } from 'three';
-import { ColorDefinition, ColorDefinitions } from './color-definition';
+import { BufferAttribute, BufferGeometry, Color, Face, Vector2 } from 'three';
 import { GeometryColorizer } from './geometry-colorizer';
 import { TerrainGenerator } from './terrain-generator';
 
@@ -12,14 +11,14 @@ export class Terrain {
   private SIZE: number = 1;
 
   private _tileAltitudes!: number[];
-  private _tileColors!: ColorDefinition[];
+  private _tileColors!: Color[];
 
   private _positionAttribute!: BufferAttribute;
   private _colorAttribute!: BufferAttribute;
 
   constructor(positionAttribute?: BufferAttribute, colorAttribute?: BufferAttribute) {
     this._tileAltitudes = TerrainGenerator.getRandomAltitudes(this.WIDTH, this.HEIGHT, 2);
-    this._tileColors = GeometryColorizer.getSolidSquareColor(this.WIDTH * this.HEIGHT, ColorDefinitions.GRAY);
+    this._tileColors = GeometryColorizer.getSolidSquareColor(this.WIDTH * this.HEIGHT, new Color('gray'));
     this._positionAttribute =
       positionAttribute ??
       TerrainGenerator.generateAltitudeVertices(this._tileAltitudes, this.WIDTH, this.HEIGHT, this.SIZE);
@@ -35,7 +34,7 @@ export class Terrain {
     return new Vector2(x, y);
   }
 
-  public setTileColor(x: number, y: number, color: ColorDefinition): void {
+  public setTileColor(x: number, y: number, color: Color): void {
     this.validateValidCoordinates(x, y);
 
     const tileIndex = y * this.WIDTH + x;
@@ -51,7 +50,7 @@ export class Terrain {
     this.setTileAttributeColor(x, y, this.getTileColor(x, y));
   }
 
-  public setTileAttributeColor(x: number, y: number, color: ColorDefinition): void {
+  public setTileAttributeColor(x: number, y: number, color: Color): void {
     this.validateValidCoordinates(x, y);
 
     const tileIndex = y * this.WIDTH + x;
@@ -63,7 +62,7 @@ export class Terrain {
     this._colorAttribute.needsUpdate = true;
   }
 
-  public getTileColor(x: number, y: number): ColorDefinition {
+  public getTileColor(x: number, y: number): Color {
     this.validateValidCoordinates(x, y);
 
     const tileIndex = y * this.WIDTH + x;

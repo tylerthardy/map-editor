@@ -3,6 +3,7 @@ import { GoldenLayoutComponentState } from 'ngx-golden-layout';
 import {
   AxesHelper,
   BufferGeometry,
+  Color,
   Face,
   Material,
   Mesh,
@@ -15,7 +16,6 @@ import {
   WebGLRenderer
 } from 'three';
 import { CameraService, KeyService, MAIN_CAMERA_NAME, OrbitControlCamera, TerrainService } from '../common/services';
-import { ColorDefinition, ColorDefinitions } from '../common/services/terrain/color-definition';
 import { Terrain } from '../common/services/terrain/terrain';
 import { ColorUtils } from '../common/util/color';
 
@@ -188,26 +188,24 @@ export class TerrainViewportComponent implements AfterViewInit {
     }
 
     const hit = intersects[0];
-    const mesh: Mesh = hit.object as Mesh;
-
     if (!hit.face) {
       return;
     }
 
     if (this.mouseDown && !this.orbitControlCamera.orbitControls.enabled) {
-      this.paintWithMouse(hit.face, ColorDefinitions.YELLOW);
+      this.paintWithMouse(hit.face, new Color('yellow'));
     }
 
-    this.drawMouseHighlight(hit.face, ColorDefinitions.RED);
+    this.drawMouseHighlight(hit.face, new Color('red'));
   }
 
   // FIXME: This is a hacky solution. We should be maintaining the highlighted tile in a separate area, not as part of a state machine.
-  private drawMouseHighlight(face: Face, color: ColorDefinition) {
+  private drawMouseHighlight(face: Face, color: Color) {
     this.unhighlightMousePosition();
     this.highlightMousePosition(face, color);
   }
 
-  private highlightMousePosition(face: Face, tint: ColorDefinition) {
+  private highlightMousePosition(face: Face, tint: Color) {
     this.highlightedSquareTriangle = face;
     const tileCoords = this.terrain.getFaceXY(face);
     const color = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
@@ -224,7 +222,7 @@ export class TerrainViewportComponent implements AfterViewInit {
     this.terrain.resetTileAttributeColor(tileCoords.x, tileCoords.y);
   }
 
-  private paintWithMouse(face: Face, color: ColorDefinition) {
+  private paintWithMouse(face: Face, color: Color) {
     const tileCoords = this.terrain.getFaceXY(face);
     this.terrain.setTileColor(tileCoords.x, tileCoords.y, color);
   }
