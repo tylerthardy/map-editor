@@ -12,6 +12,7 @@ export class Terrain {
 
   private _tileAltitudes!: number[];
   private _tileColors!: Color[];
+  private _highlightedTiles: { [key: number]: { [key: number]: boolean } } = {};
 
   private _positionAttribute!: BufferAttribute;
   private _colorAttribute!: BufferAttribute;
@@ -32,6 +33,33 @@ export class Terrain {
     const x = tileIndex % this.WIDTH;
     const y = Math.floor(tileIndex / this.WIDTH);
     return new Vector2(x, y);
+  }
+
+  public highlightTile(x: number, y: number, color: Color) {
+    this.validateValidCoordinates(x, y);
+
+    if (this._highlightedTiles[x] && this._highlightedTiles[x][y]) {
+      return;
+    }
+
+    this.unhighlightTiles();
+    this._highlightedTiles[x] = this._highlightedTiles[x] ?? {};
+    this._highlightedTiles[x][y] = true;
+    this.setTileAttributeColor(x, y, color);
+  }
+
+  public unhighlightTiles() {
+    Object.entries(this._highlightedTiles).forEach((xValue: [string, { [key: number]: boolean }]) => {
+      const x: number = Number.parseInt(xValue[0]);
+      Object.entries(xValue[1]).forEach((yValue: [string, boolean]) => {
+        const y = Number.parseInt(yValue[0]);
+        const tileIndex = y * this.WIDTH + x;
+        const vertexIndex = tileIndex * 3 * 2;
+        const originalColor = this._tileColors[vertexIndex];
+        this.setTileAttributeColor(x, y, originalColor);
+      });
+    });
+    this._highlightedTiles = {};
   }
 
   public setTileColor(x: number, y: number, color: Color): void {

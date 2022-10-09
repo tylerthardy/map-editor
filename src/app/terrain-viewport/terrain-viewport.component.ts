@@ -4,7 +4,6 @@ import {
   AxesHelper,
   BufferGeometry,
   Color,
-  Face,
   Material,
   Mesh,
   MeshStandardMaterial,
@@ -17,7 +16,6 @@ import {
 } from 'three';
 import { CameraService, KeyService, MAIN_CAMERA_NAME, OrbitControlCamera, TerrainService } from '../common/services';
 import { Terrain } from '../common/services/terrain/terrain';
-import { ColorUtils } from '../common/util/color';
 
 @Component({
   selector: 'app-terrain-viewport',
@@ -44,7 +42,6 @@ export class TerrainViewportComponent implements AfterViewInit {
   private raycaster: Raycaster = new Raycaster();
   private mouse: Vector2 = new Vector2();
   private mouseDown: boolean = false;
-  private highlightedSquareTriangle: Face | null = null;
 
   protected animationEvents: ((z: any) => void)[] = [];
 
@@ -192,38 +189,15 @@ export class TerrainViewportComponent implements AfterViewInit {
       return;
     }
 
+    const tileCoords: Vector2 = this.terrain.getFaceXY(hit.face);
     if (this.mouseDown && !this.orbitControlCamera.orbitControls.enabled) {
-      this.paintWithMouse(hit.face, new Color('yellow'));
+      this.paintWithMouse(tileCoords, new Color('yellow'));
     }
 
-    this.drawMouseHighlight(hit.face, new Color('red'));
+    this.terrain.highlightTile(tileCoords.x, tileCoords.y, new Color('red'));
   }
 
-  // FIXME: This is a hacky solution. We should be maintaining the highlighted tile in a separate area, not as part of a state machine.
-  private drawMouseHighlight(face: Face, color: Color) {
-    this.unhighlightMousePosition();
-    this.highlightMousePosition(face, color);
-  }
-
-  private highlightMousePosition(face: Face, tint: Color) {
-    this.highlightedSquareTriangle = face;
-    const tileCoords = this.terrain.getFaceXY(face);
-    const color = this.terrain.getTileColor(tileCoords.x, tileCoords.y);
-    const tintedColor = ColorUtils.tintColor(color, tint, 0.4);
-    this.terrain.setTileAttributeColor(tileCoords.x, tileCoords.y, tintedColor);
-  }
-
-  private unhighlightMousePosition() {
-    if (!this.highlightedSquareTriangle) {
-      return;
-    }
-
-    const tileCoords = this.terrain.getFaceXY(this.highlightedSquareTriangle);
-    this.terrain.resetTileAttributeColor(tileCoords.x, tileCoords.y);
-  }
-
-  private paintWithMouse(face: Face, color: Color) {
-    const tileCoords = this.terrain.getFaceXY(face);
+  private paintWithMouse(tileCoords: Vector2, color: Color) {
     this.terrain.setTileColor(tileCoords.x, tileCoords.y, color);
   }
 }
