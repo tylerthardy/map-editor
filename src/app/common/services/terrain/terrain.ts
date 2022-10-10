@@ -8,24 +8,30 @@ export class Terrain {
   public geometry3d!: BufferGeometry;
   public geometry2d!: BufferGeometry;
 
-  private SIZE: number = 1;
-
-  private _tileAltitudes!: number[];
   private _tileColors!: Color[];
   private _highlightedTiles: { [key: number]: { [key: number]: boolean } } = {};
 
   private _positionAttribute!: BufferAttribute;
   private _colorAttribute!: BufferAttribute;
 
-  constructor(positionAttribute?: BufferAttribute, colorAttribute?: BufferAttribute) {
-    this._tileAltitudes = TerrainGenerator.getRandomAltitudes(this.WIDTH, this.HEIGHT, 2);
+  constructor(positionAttribute: BufferAttribute, colorAttribute: BufferAttribute) {
     this._tileColors = GeometryColorizer.getSolidSquareColor(this.WIDTH * this.HEIGHT, new Color('gray'));
-    this._positionAttribute =
-      positionAttribute ??
-      TerrainGenerator.generateAltitudeVertices(this._tileAltitudes, this.WIDTH, this.HEIGHT, this.SIZE);
-    this._colorAttribute = colorAttribute ?? GeometryColorizer.generateColorAttribute(this._tileColors);
+    this._positionAttribute = positionAttribute;
+    this._colorAttribute = colorAttribute;
 
-    this.generateGeometries();
+    this.geometry3d = new BufferGeometry();
+    this.geometry3d.attributes.position = this._positionAttribute;
+    this.geometry3d.attributes.color = this._colorAttribute;
+    this.geometry3d.computeVertexNormals();
+    this.geometry3d.attributes.position.needsUpdate = true;
+    this.geometry3d.attributes.color.needsUpdate = true;
+
+    this.geometry2d = new BufferGeometry();
+    this.geometry2d.copy(this.geometry3d);
+    this.geometry2d.attributes.position = TerrainGenerator.flattenVertices(this._positionAttribute);
+    this.geometry2d.attributes.color = this._colorAttribute;
+    this.geometry3d.attributes.position.needsUpdate = true;
+    this.geometry3d.attributes.color.needsUpdate = true;
   }
 
   public getFaceXY(face: Face): Vector2 {
@@ -100,21 +106,5 @@ export class Terrain {
 
   private validateValidCoordinates(x: number, y: number): void {
     if (x >= this.WIDTH || y >= this.HEIGHT || x < 0 || y < 0) throw new Error('Invalid dimension');
-  }
-
-  private generateGeometries() {
-    this.geometry3d = new BufferGeometry();
-    this.geometry3d.attributes.position = this._positionAttribute;
-    this.geometry3d.attributes.color = this._colorAttribute;
-    this.geometry3d.computeVertexNormals();
-    this.geometry3d.attributes.position.needsUpdate = true;
-    this.geometry3d.attributes.color.needsUpdate = true;
-
-    this.geometry2d = new BufferGeometry();
-    this.geometry2d.copy(this.geometry3d);
-    this.geometry2d.attributes.position = TerrainGenerator.flattenVertices(this._positionAttribute);
-    this.geometry2d.attributes.color = this._colorAttribute;
-    this.geometry3d.attributes.position.needsUpdate = true;
-    this.geometry3d.attributes.color.needsUpdate = true;
   }
 }
