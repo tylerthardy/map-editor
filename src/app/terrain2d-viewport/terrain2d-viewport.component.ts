@@ -44,7 +44,8 @@ export class Terrain2dViewportComponent extends TerrainViewportComponent impleme
     // override for 2d view downward
     this.orbitControlCamera.orbitControls.reset();
     this.orbitControlCamera.orbitControls.object.position.set(4, 15, 4);
-    this.orbitControlCamera.orbitControls.object.rotation.set(-1.57, 0, 0);
+    const radian90Degrees: number = 90 * (Math.PI / 180);
+    this.orbitControlCamera.orbitControls.object.rotation.set(-radian90Degrees, 0, 0);
     this.registerAnimationEvents();
 
     this.addTileGrid();
