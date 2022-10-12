@@ -1,4 +1,5 @@
 import { Color } from 'three';
+import { TileColors } from '../services';
 
 export abstract class ColorUtils {
   public static tintColor(baseColor: Color, tint: Color, opacity: number): Color {
@@ -6,6 +7,15 @@ export abstract class ColorUtils {
     const g = this.calculateOverlayColorBand(baseColor.g, tint.g, opacity);
     const b = this.calculateOverlayColorBand(baseColor.b, tint.b, opacity);
     return new Color(r, g, b);
+  }
+  public static tintTileColors(tileColors: TileColors, tint: Color, opacity: number): TileColors {
+    const tintedColors: any = {};
+    Object.entries(tileColors).map((kvp: [string, Color]) => {
+      const color: Color = kvp[1];
+      const tinted: Color = ColorUtils.tintColor(color, tint, opacity);
+      tintedColors[kvp[0]] = tinted;
+    });
+    return tintedColors as TileColors;
   }
 
   public static calculateOverlayColorBand(

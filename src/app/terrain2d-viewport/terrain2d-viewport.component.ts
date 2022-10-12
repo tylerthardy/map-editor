@@ -65,8 +65,8 @@ export class Terrain2dViewportComponent extends TerrainViewportComponent impleme
 
   addTileGrid(): void {
     const meshConfig = {
-      sceneHeight: 10,
-      sceneWidth: 10,
+      sceneHeight: this.terrain.height,
+      sceneWidth: this.terrain.width,
       lineWidth: 0.002,
       color: 0x000000
     };

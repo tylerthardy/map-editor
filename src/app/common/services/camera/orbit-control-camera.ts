@@ -43,7 +43,7 @@ export class OrbitControlCamera {
 
   public reset() {
     this.orbitControls.reset();
-    this.orbitControls.object.position.set(10, 10, 10);
+    this.orbitControls.object.position.set(18, 18, 18);
     this.orbitControls.update();
     window.localStorage.removeItem(`orbitControls.${this.label}`);
     console.log('Reset orbitControls location!');

@@ -2,7 +2,7 @@ import { Terrain } from '../terrain';
 import { Tile } from './tile';
 
 export class Chunk {
-  static size: number = 10;
+  static size: number = 50;
 
   public terrain: Terrain;
   private tiles: Tile[];

@@ -191,10 +191,10 @@ export class TerrainViewportComponent implements AfterViewInit {
 
     const tileCoords: Vector2 = this.terrain.getFaceXY(hit.face);
     if (this.mouseDown && !this.orbitControlCamera.orbitControls.enabled) {
-      this.paintWithMouse(tileCoords, new Color('yellow'));
+      this.paintWithMouse(tileCoords, new Color('magenta'));
     }
 
-    this.terrain.highlightTile(tileCoords.x, tileCoords.y, new Color('red'));
+    this.terrain.highlightTile(tileCoords.x, tileCoords.y, new Color('white'));
   }
 
   private paintWithMouse(tileCoords: Vector2, color: Color) {
