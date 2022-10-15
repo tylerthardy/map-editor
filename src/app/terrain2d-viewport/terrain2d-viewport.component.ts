@@ -4,6 +4,7 @@ import { BoxGeometry, BufferGeometry, ConeGeometry, Mesh, MeshBasicMaterial, Obj
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 import { CameraService, KeyService, MAIN_CAMERA_NAME, TerrainService } from '../common/services';
+import { BrushService } from '../common/services/brush/brush.service';
 import { TerrainViewportComponent } from '../terrain-viewport/terrain-viewport.component';
 
 @Component({
@@ -17,11 +18,12 @@ export class Terrain2dViewportComponent extends TerrainViewportComponent impleme
   private target3DRepresentation!: Mesh;
   constructor(
     terrainService: TerrainService,
+    override brushService: BrushService,
     override cameraService: CameraService,
     override keyService: KeyService,
     @Inject(GoldenLayoutComponentState) state: any
   ) {
-    super(terrainService, cameraService, keyService, state);
+    super(terrainService, brushService, cameraService, keyService, state);
     this.cameraName = 'terrain2dViewport';
     this.terrainGeometry = terrainService.terrain.geometry2d;
   }

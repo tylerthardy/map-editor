@@ -15,6 +15,7 @@ import {
   WebGLRenderer
 } from 'three';
 import { CameraService, KeyService, MAIN_CAMERA_NAME, OrbitControlCamera, TerrainService } from '../common/services';
+import { BrushService } from '../common/services/brush/brush.service';
 import { Terrain } from '../common/services/terrain/terrain';
 
 @Component({
@@ -47,6 +48,7 @@ export class TerrainViewportComponent implements AfterViewInit {
 
   constructor(
     terrainService: TerrainService,
+    protected brushService: BrushService,
     protected cameraService: CameraService,
     protected keyService: KeyService,
     @Inject(GoldenLayoutComponentState) state: any
@@ -191,10 +193,10 @@ export class TerrainViewportComponent implements AfterViewInit {
 
     const tileCoords: Vector2 = this.terrain.getFaceXY(hit.face);
     if (this.mouseDown && !this.orbitControlCamera.orbitControls.enabled) {
-      this.paintWithMouse(tileCoords, new Color('magenta'));
+      this.paintWithMouse(tileCoords, this.brushService.brushColor);
     }
 
-    this.terrain.highlightTile(tileCoords.x, tileCoords.y, new Color('white'));
+    this.terrain.highlightTile(tileCoords.x, tileCoords.y, this.brushService.brushColor);
   }
 
   private paintWithMouse(tileCoords: Vector2, color: Color) {

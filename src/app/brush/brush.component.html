@@ -1,0 +1,8 @@
+<ng-container *ngFor="let colorButton of colorButtons">
+  <button
+    class="brush-button"
+    (click)="onButtonColorClick(colorButton)"
+    [ngClass]="{ 'selected-color': brushService.isSelected(colorButton.color) }"
+    [ngStyle]="{ 'background-color': '#' + colorButton.color.getHexString() }"
+  ></button>
+</ng-container>
