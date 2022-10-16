@@ -2,19 +2,19 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Color } from 'three';
 import { BrushService } from '../common/services/brush/brush.service';
 
-import { BrushComponent } from './brush.component';
+import { BrushColorComponent } from './brush-color.component';
 import { ButtonColor } from './button-color';
 
-fdescribe('BrushComponent', () => {
-  let component: BrushComponent;
+fdescribe(BrushColorComponent.name, () => {
+  let component: BrushColorComponent;
   let componentElement: HTMLElement;
-  let fixture: ComponentFixture<BrushComponent>;
+  let fixture: ComponentFixture<BrushColorComponent>;
   let mockBrushService: jasmine.SpyObj<BrushService>;
 
   beforeEach(async () => {
-    mockBrushService = jasmine.createSpyObj('BrushService', ['setBrushColor', 'isSelected']);
+    mockBrushService = jasmine.createSpyObj(BrushService.name, ['setBrushColor', 'isSelected']);
     await TestBed.configureTestingModule({
-      declarations: [BrushComponent],
+      declarations: [BrushColorComponent],
       providers: [
         {
           provide: BrushService,
@@ -23,7 +23,7 @@ fdescribe('BrushComponent', () => {
       ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(BrushComponent);
+    fixture = TestBed.createComponent(BrushColorComponent);
     component = fixture.componentInstance;
     componentElement = fixture.nativeElement as HTMLElement;
     fixture.detectChanges();
@@ -46,7 +46,7 @@ fdescribe('BrushComponent', () => {
     });
   });
 
-  describe(BrushComponent.prototype.onButtonColorClick.name, () => {
+  describe(BrushColorComponent.prototype.onButtonColorClick.name, () => {
     it('should call set brush color on service when color clicked', async () => {
       const colorButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.brush-button'));
       const button: HTMLButtonElement = colorButtons.find((button) => !button.classList.contains('selected-color'))!;

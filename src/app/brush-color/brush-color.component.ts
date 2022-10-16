@@ -5,10 +5,10 @@ import { ButtonColor } from './button-color';
 
 @Component({
   selector: 'app-brush',
-  templateUrl: './brush.component.html',
-  styleUrls: ['./brush.component.scss']
+  templateUrl: './brush-color.component.html',
+  styleUrls: ['./brush-color.component.scss']
 })
-export class BrushComponent implements OnInit {
+export class BrushColorComponent implements OnInit {
   public colorButtons: ButtonColor[] = [
     { name: 'red', color: new Color('red') },
     { name: 'blue', color: new Color('blue') },

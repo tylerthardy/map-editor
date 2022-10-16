@@ -3,12 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { ComponentType, GoldenLayoutModule } from 'ngx-golden-layout';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BrushComponent } from './brush/brush.component';
+import { BrushColorComponent } from './brush-color/brush-color.component';
 import { LayoutService, TerrainService } from './common/services';
 import { TerrainViewportComponent } from './terrain-viewport/terrain-viewport.component';
 import { Terrain2dViewportComponent } from './terrain2d-viewport/terrain2d-viewport.component';
 
-const components: Type<any>[] = [TerrainViewportComponent, Terrain2dViewportComponent, BrushComponent];
+const components: Type<any>[] = [TerrainViewportComponent, Terrain2dViewportComponent, BrushColorComponent];
 
 const componentTypes: ComponentType[] = components.map((componentType: Type<any>): ComponentType => {
   return {
@@ -18,7 +18,7 @@ const componentTypes: ComponentType[] = components.map((componentType: Type<any>
 });
 
 @NgModule({
-  declarations: [AppComponent, TerrainViewportComponent, Terrain2dViewportComponent, BrushComponent],
+  declarations: [AppComponent, TerrainViewportComponent, Terrain2dViewportComponent, BrushColorComponent],
   imports: [BrowserModule, AppRoutingModule, GoldenLayoutModule.forRoot(componentTypes)],
   providers: [TerrainService, LayoutService],
   bootstrap: [AppComponent]
