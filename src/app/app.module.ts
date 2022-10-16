@@ -4,11 +4,17 @@ import { ComponentType, GoldenLayoutModule } from 'ngx-golden-layout';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrushColorComponent } from './brush-color/brush-color.component';
+import { BrushElevationComponent } from './brush-elevation/brush-elevation.component';
 import { LayoutService, TerrainService } from './common/services';
 import { TerrainViewportComponent } from './terrain-viewport/terrain-viewport.component';
 import { Terrain2dViewportComponent } from './terrain2d-viewport/terrain2d-viewport.component';
 
-const components: Type<any>[] = [TerrainViewportComponent, Terrain2dViewportComponent, BrushColorComponent];
+const components: Type<any>[] = [
+  TerrainViewportComponent,
+  Terrain2dViewportComponent,
+  BrushColorComponent,
+  BrushElevationComponent
+];
 
 const componentTypes: ComponentType[] = components.map((componentType: Type<any>): ComponentType => {
   return {
@@ -18,7 +24,13 @@ const componentTypes: ComponentType[] = components.map((componentType: Type<any>
 });
 
 @NgModule({
-  declarations: [AppComponent, TerrainViewportComponent, Terrain2dViewportComponent, BrushColorComponent],
+  declarations: [
+    AppComponent,
+    TerrainViewportComponent,
+    Terrain2dViewportComponent,
+    BrushColorComponent,
+    BrushElevationComponent
+  ],
   imports: [BrowserModule, AppRoutingModule, GoldenLayoutModule.forRoot(componentTypes)],
   providers: [TerrainService, LayoutService],
   bootstrap: [AppComponent]

@@ -10,4 +10,14 @@ html {
   margin: 0;
   overflow: hidden;
   background-color: rgb(34, 34, 34);
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+}
+
+.editor-button {
+  color: white;
+  background-color: #555555;
+}
+.editor-button:hover {
+  background-color: #777777;
 }

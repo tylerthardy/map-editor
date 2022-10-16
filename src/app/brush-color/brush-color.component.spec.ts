@@ -5,7 +5,7 @@ import { BrushService } from '../common/services/brush/brush.service';
 import { BrushColorComponent } from './brush-color.component';
 import { ButtonColor } from './button-color';
 
-fdescribe(BrushColorComponent.name, () => {
+describe(BrushColorComponent.name, () => {
   let component: BrushColorComponent;
   let componentElement: HTMLElement;
   let fixture: ComponentFixture<BrushColorComponent>;
@@ -35,7 +35,7 @@ fdescribe(BrushColorComponent.name, () => {
 
   describe('color button rendering', () => {
     it('should have border class when the color is the brush color', async () => {
-      mockBrushService.isSelected.and.returnValue(true);
+      mockBrushService.isSelectedColor.and.returnValue(true);
 
       fixture.detectChanges();
       await fixture.whenStable();
