@@ -1,4 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { GoldenLayoutComponentState } from 'ngx-golden-layout';
+import { CameraService, KeyService, Terrain, TerrainService } from '../common/services';
+import { BrushService } from '../common/services/brush/brush.service';
 
 import { Terrain2dViewportComponent } from './terrain2d-viewport.component';
 
@@ -8,9 +11,36 @@ describe('Terrain2dViewportComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ Terrain2dViewportComponent ]
-    })
-    .compileComponents();
+      declarations: [Terrain2dViewportComponent],
+      providers: [
+        {
+          provide: TerrainService,
+          useValue: {
+            terrain: new Terrain([], 0)
+          }
+        },
+        {
+          provide: TerrainService,
+          useValue: {}
+        },
+        {
+          provide: BrushService,
+          useValue: {}
+        },
+        {
+          provide: CameraService,
+          useValue: {}
+        },
+        {
+          provide: KeyService,
+          useValue: {}
+        },
+        {
+          provide: GoldenLayoutComponentState,
+          useValue: {}
+        }
+      ]
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Terrain2dViewportComponent);
     component = fixture.componentInstance;

@@ -5,13 +5,14 @@ import { BrushService } from '../common/services/brush/brush.service';
 import { BrushComponent } from './brush.component';
 import { ButtonColor } from './button-color';
 
-describe('BrushComponent', () => {
+fdescribe('BrushComponent', () => {
   let component: BrushComponent;
   let componentElement: HTMLElement;
   let fixture: ComponentFixture<BrushComponent>;
-  let mockBrushService: BrushService = jasmine.createSpyObj([BrushService.name, ['setBrushColor']]);
+  let mockBrushService: jasmine.SpyObj<BrushService>;
 
   beforeEach(async () => {
+    mockBrushService = jasmine.createSpyObj('BrushService', ['setBrushColor', 'isSelected']);
     await TestBed.configureTestingModule({
       declarations: [BrushComponent],
       providers: [
@@ -32,27 +33,41 @@ describe('BrushComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('color button rendering', () => {
+    it('should have border class when the color is the brush color', async () => {
+      mockBrushService.isSelected.and.returnValue(true);
+
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const colorButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.brush-button'));
+      const selectedButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.selected-color'));
+      expect(colorButtons.length).toEqual(selectedButtons.length);
+    });
+  });
+
   describe(BrushComponent.prototype.onButtonColorClick.name, () => {
+    it('should call set brush color on service when color clicked', async () => {
+      const colorButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.brush-button'));
+      const button: HTMLButtonElement = colorButtons.find((button) => !button.classList.contains('selected-color'))!;
+
+      button.click();
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      const selectedColor: Color = new Color(button.style.backgroundColor);
+      expect(mockBrushService.setBrushColor).toHaveBeenCalledWith(selectedColor);
+    });
+
     it('should set color to specified color', () => {
-      const color: Color = new Color('red');
+      const color: Color = new Color('green');
       const buttonColor: ButtonColor = {
         color,
-        name: 'red button'
+        name: 'green button'
       };
       component.onButtonColorClick(buttonColor);
 
       expect(mockBrushService.setBrushColor).toHaveBeenCalledOnceWith(color);
-    });
-
-    it('should be called when a button is clicked, with appropriate params', () => {
-      const colorButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.brush-button'));
-      const button: HTMLButtonElement = colorButtons.find((button) => !button.classList.contains('selected'))!;
-
-      button.click();
-      const selectedColor: Color = new Color(button.style.backgroundColor);
-      expect(mockBrushService.setBrushColor).toHaveBeenCalledWith(selectedColor);
-      expect(mockBrushService.brushColor).toEqual(selectedColor);
-      expect(button.style.border).toEqual('1 px solid white');
     });
   });
 });
