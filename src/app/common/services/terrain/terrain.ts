@@ -54,7 +54,7 @@ export class Terrain {
   }
 
   public highlightTile(x: number, y: number, highlightColor: Color) {
-    this.validateValidCoordinates(x, y);
+    this.assertValidCoordinates(x, y);
 
     if (this.highlightedTiles[x] && this.highlightedTiles[x][y]) {
       return;
@@ -81,8 +81,13 @@ export class Terrain {
     this.highlightedTiles = [];
   }
 
+  public setElevation(x: number, y: number, elevation: number): void {
+    this.assertValidCoordinates(x, y);
+    this.addElevationToPositionAttribute(x, y, elevation);
+  }
+
   public setTileColor(x: number, y: number, color: Color, modifySurrounding: boolean = true): void {
-    this.validateValidCoordinates(x, y);
+    this.assertValidCoordinates(x, y);
 
     const tileIndex: number | null = this.getTileIndex(x, y);
     if (tileIndex === null) {
@@ -108,9 +113,6 @@ export class Terrain {
       const br: number | null = this.getTileIndex(x + 1, y + 1);
 
       if (tl) {
-        console.log(x, y);
-        console.log(tl);
-        if (!this.tileColors[tl]) debugger;
         this.tileColors[tl].bottomRightColor = color;
         this.updateAttributeFromTileColors(tl);
       }
@@ -155,7 +157,7 @@ export class Terrain {
 
   public setTileColorAttributeWithTileColors(x: number, y: number, colors: TileColors): void {
     // TODO: Cleanup this duplicated mess
-    this.validateValidCoordinates(x, y);
+    this.assertValidCoordinates(x, y);
 
     const tileIndex = this.getTileIndex(x, y);
     if (tileIndex === null) {
@@ -195,7 +197,7 @@ export class Terrain {
   }
 
   public setTileColorAttributeWithSingleColor(x: number, y: number, color: Color): void {
-    this.validateValidCoordinates(x, y);
+    this.assertValidCoordinates(x, y);
 
     const tileIndex = this.getTileIndex(x, y);
     if (tileIndex === null) {
@@ -209,13 +211,62 @@ export class Terrain {
     this.colorAttribute.needsUpdate = true;
   }
 
+  private addElevationToPositionAttribute(x: number, y: number, elevation: number): void {
+    this.assertValidCoordinates(x, y);
+
+    const tileIndex: number | null = this.getTileIndex(x, y);
+    if (!tileIndex) {
+      throw new Error('Invalid tile index');
+    }
+
+    const tile: Tile = this.tiles[tileIndex];
+
+    const topLeftPosition = new Vector3(x, tile.cornerElevations[0] + elevation, y);
+    const topRightPosition = new Vector3(x + Tile.size, tile.cornerElevations[1] + elevation, y);
+    const bottomLeftPosition = new Vector3(x, tile.cornerElevations[2] + elevation, y + Tile.size);
+    const bottomRightPosition = new Vector3(x + Tile.size, tile.cornerElevations[3] + elevation, y + Tile.size);
+
+    const tl: number | null = this.getTileIndex(x - 1, y - 1);
+    const t: number | null = this.getTileIndex(x, y - 1);
+    const tr: number | null = this.getTileIndex(x + 1, y - 1);
+    const l: number | null = this.getTileIndex(x - 1, y);
+    const r: number | null = this.getTileIndex(x + 1, y);
+    const bl: number | null = this.getTileIndex(x - 1, y + 1);
+    const b: number | null = this.getTileIndex(x, y + 1);
+    const br: number | null = this.getTileIndex(x + 1, y + 1);
+
+    if (topLeftPosition.distanceTo(bottomRightPosition) < bottomLeftPosition.distanceTo(topRightPosition)) {
+      // triangle 1
+      this.positionAttribute.setXYZ(tileIndex * 6 + 0, ...topLeftPosition.toArray());
+      this.positionAttribute.setXYZ(tileIndex * 6 + 1, ...bottomLeftPosition.toArray());
+      this.positionAttribute.setXYZ(tileIndex * 6 + 2, ...bottomRightPosition.toArray());
+
+      // triangle 2
+      this.positionAttribute.setXYZ(tileIndex * 6 + 3, ...topLeftPosition.toArray());
+      this.positionAttribute.setXYZ(tileIndex * 6 + 4, ...bottomRightPosition.toArray());
+      this.positionAttribute.setXYZ(tileIndex * 6 + 5, ...topRightPosition.toArray());
+    } else {
+      // triangle 1
+      this.positionAttribute.setXYZ(tileIndex * 6 + 0, ...topLeftPosition.toArray());
+      this.positionAttribute.setXYZ(tileIndex * 6 + 1, ...bottomLeftPosition.toArray());
+      this.positionAttribute.setXYZ(tileIndex * 6 + 2, ...topRightPosition.toArray());
+
+      // triangle 2
+      this.positionAttribute.setXYZ(tileIndex * 6 + 3, ...bottomLeftPosition.toArray());
+      this.positionAttribute.setXYZ(tileIndex * 6 + 4, ...bottomRightPosition.toArray());
+      this.positionAttribute.setXYZ(tileIndex * 6 + 5, ...topRightPosition.toArray());
+    }
+
+    this.positionAttribute.needsUpdate = true;
+  }
+
   // TODO: Reduce duplicate code by using this method where applicable
   private updateAttributeFromTileColors(tileIndex: number): void {
     const tile: Tile = this.tiles[tileIndex];
     const x: number = tileIndex % this.width;
     const y: number = Math.floor(tileIndex / this.height);
 
-    this.validateValidCoordinates(x, y);
+    this.assertValidCoordinates(x, y);
 
     const topLeftPosition = new Vector3(x, tile.cornerElevations[0], y);
     const topRightPosition = new Vector3(x + Tile.size, tile.cornerElevations[1], y);
@@ -334,7 +385,7 @@ export class Terrain {
     };
   }
 
-  private validateValidCoordinates(x: number, y: number): void {
+  private assertValidCoordinates(x: number, y: number): void {
     if (x >= this.width || y >= this.height || x < 0 || y < 0) throw new Error('Invalid dimension');
   }
 }

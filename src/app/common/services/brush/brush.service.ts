@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Color } from 'three';
+import { KeyService } from '../key';
 
 @Injectable({
   providedIn: 'root'
@@ -7,8 +8,18 @@ import { Color } from 'three';
 export class BrushService {
   public brushColor: Color = new Color('white');
   public brushElevation: number = 1;
+  public paintMode: boolean = true;
 
-  constructor() {}
+  constructor(keyService: KeyService) {
+    keyService.registerKeyEvent({
+      name: 'brush-service-1',
+      key: '1',
+      keyDown: () => {},
+      keyUp: () => {
+        this.paintMode = !this.paintMode;
+      }
+    });
+  }
 
   public setBrushColor(color: Color): void {
     this.brushColor = color;

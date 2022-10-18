@@ -3,7 +3,6 @@ import { GoldenLayoutComponentState } from 'ngx-golden-layout';
 import {
   AxesHelper,
   BufferGeometry,
-  Color,
   Material,
   Mesh,
   MeshStandardMaterial,
@@ -193,14 +192,14 @@ export class TerrainViewportComponent implements AfterViewInit {
 
     const tileCoords: Vector2 = this.terrain.getFaceXY(hit.face);
     if (this.mouseDown && !this.orbitControlCamera.orbitControls.enabled) {
-      this.paintWithMouse(tileCoords, this.brushService.brushColor);
+      if (this.brushService.paintMode) {
+        this.terrain.setTileColor(tileCoords.x, tileCoords.y, this.brushService.brushColor);
+      } else {
+        this.terrain.setElevation(tileCoords.x, tileCoords.y, this.brushService.brushElevation);
+      }
     }
 
     this.terrain.highlightTile(tileCoords.x, tileCoords.y, this.brushService.brushColor);
-  }
-
-  private paintWithMouse(tileCoords: Vector2, color: Color) {
-    this.terrain.setTileColor(tileCoords.x, tileCoords.y, color);
   }
 }
 
