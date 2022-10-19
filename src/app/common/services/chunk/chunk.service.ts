@@ -21,12 +21,6 @@ export class ChunkService {
       for (let x = 0; x < Chunk.size; x++) {
         const tileIndex: number = y * Chunk.size + x;
         const tile: Tile = new Tile();
-        if ((x + 1) % 2 === 0) {
-          tile.cornerElevations = [1, 2, 1, 2];
-        } else {
-          tile.cornerElevations = [2, 1, 2, 1];
-        }
-
         tiles[tileIndex] = tile;
       }
     }
