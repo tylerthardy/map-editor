@@ -9,6 +9,7 @@ export class BrushService {
   public brushColor: Color = new Color('white');
   public brushElevation: number = 1;
   public paintMode: boolean = true;
+  public modifySurrounding: boolean = true;
 
   constructor(keyService: KeyService) {
     keyService.registerKeyEvent({

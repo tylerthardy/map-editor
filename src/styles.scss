@@ -2,6 +2,8 @@
 @import '~golden-layout/src/css/goldenlayout-base.css';
 @import '~golden-layout/src/css/goldenlayout-dark-theme.css';
 
+$text-color: #cccccc;
+
 body,
 html {
   width: 100vw;
@@ -12,12 +14,22 @@ html {
   background-color: rgb(34, 34, 34);
   font-family: Arial, sans-serif;
   font-size: 12px;
+  color: $text-color;
 }
 
 .editor-button {
-  color: white;
+  color: $text-color;
   background-color: #555555;
 }
 .editor-button:hover {
   background-color: #777777;
+}
+.icon-button {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid black;
+}
+.button-selected {
+  border: 1px solid white !important;
 }

@@ -1,0 +1,14 @@
+<button
+  class="editor-button icon-button"
+  [ngClass]="{ 'button-selected': brushService.paintMode }"
+  (click)="onPaintModeClick()"
+>
+  🎨
+</button>
+<button
+  class="editor-button icon-button"
+  [ngClass]="{ 'button-selected': !brushService.paintMode }"
+  (click)="onElevationModeClick()"
+>
+  ⛰
+</button>

@@ -4,7 +4,7 @@ import { BrushService } from '../common/services/brush/brush.service';
 import { ButtonColor } from './button-color';
 
 @Component({
-  selector: 'app-brush',
+  selector: 'app-brush-color',
   templateUrl: './brush-color.component.html',
   styleUrls: ['./brush-color.component.scss']
 })

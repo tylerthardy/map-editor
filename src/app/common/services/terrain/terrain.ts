@@ -150,7 +150,7 @@ export class Terrain {
     this.setTilePositionAttributeWithTileElevations(tileIndex, this.tileElevations[tileIndex]);
   }
 
-  public setTileStoredColor(x: number, y: number, color: Color, modifySurrounding: boolean = true): void {
+  public setTileStoredColor(x: number, y: number, color: Color, modifySurrounding: boolean): void {
     this.assertValidCoordinates(x, y);
 
     const tileIndex: number | null = this.getTileIndex(x, y);

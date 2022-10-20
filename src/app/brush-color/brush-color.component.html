@@ -2,7 +2,9 @@
   <button
     class="brush-button"
     (click)="onButtonColorClick(colorButton)"
-    [ngClass]="{ 'selected-color': brushService.isSelectedColor(colorButton.color) }"
+    [ngClass]="{ 'button-selected': brushService.isSelectedColor(colorButton.color) }"
     [ngStyle]="{ 'background-color': '#' + colorButton.color.getHexString() }"
   ></button>
 </ng-container>
+<input type="checkbox" id="modify-surrounding" [(ngModel)]="brushService.modifySurrounding" />
+<label for="modify-surrounding">Modify Surrounding</label>

@@ -193,7 +193,12 @@ export class TerrainViewportComponent implements AfterViewInit {
     const tileCoords: Vector2 = this.terrain.getFaceXY(hit.face);
     if (this.mouseDown && !this.orbitControlCamera.orbitControls.enabled) {
       if (this.brushService.paintMode) {
-        this.terrain.setTileStoredColor(tileCoords.x, tileCoords.y, this.brushService.brushColor);
+        this.terrain.setTileStoredColor(
+          tileCoords.x,
+          tileCoords.y,
+          this.brushService.brushColor,
+          this.brushService.modifySurrounding
+        );
       } else {
         this.terrain.setTileStoredElevation(tileCoords.x, tileCoords.y, this.brushService.brushElevation / 10);
       }
