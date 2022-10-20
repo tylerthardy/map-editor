@@ -1,5 +1,5 @@
 // TODO: Make typescript
-const { app, BrowserWindow, ipcMain, Menu, dialog } = require('electron');
+const { app, BrowserWindow, ipcMain, Menu, nativeTheme } = require('electron');
 const url = require('url');
 const path = require('path');
 
@@ -17,6 +17,7 @@ function onReady() {
     }
   });
   win.loadURL('http://localhost:4200');
+  nativeTheme.themeSource = 'dark';
 
   ipcMain.on('toggle-menu', () => {
     menuVisibility = !menuVisibility;
