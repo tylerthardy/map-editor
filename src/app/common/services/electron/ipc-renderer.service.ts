@@ -8,4 +8,8 @@ export class IpcRendererService {
   public ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer as IpcRenderer;
 
   constructor() {}
+
+  public register(eventName: string, callback: (arg: any) => void) {
+    this.ipcRenderer.on(eventName, callback);
+  }
 }

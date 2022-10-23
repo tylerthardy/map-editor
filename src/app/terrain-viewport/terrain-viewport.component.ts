@@ -128,11 +128,6 @@ export class TerrainViewportComponent implements AfterViewInit {
       console.log('not viewport');
       return;
     }
-    console.log(resized);
-    console.log({
-      width: resized.contentRect.width,
-      height: resized.contentRect.height
-    });
     this.orbitControlCamera.camera.aspect = this.viewport.offsetWidth / this.viewport.offsetHeight;
     this.orbitControlCamera.camera.updateProjectionMatrix();
 
