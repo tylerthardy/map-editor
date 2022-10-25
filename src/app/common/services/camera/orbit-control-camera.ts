@@ -11,7 +11,7 @@ export class OrbitControlCamera {
     this.label = label;
     const fov: number = 70;
     const near: number = 0.01;
-    const far: number = 200;
+    const far: number = 5000;
     this.camera = new PerspectiveCamera(fov, aspectRatio, near, far);
     this.orbitControls = new OrbitControls(this.camera, domElement);
   }

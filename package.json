@@ -24,6 +24,7 @@
     "golden-layout": "^1.5.9",
     "jquery": "3.6.0",
     "ngx-golden-layout": "^0.0.40",
+    "ngx-toastr": "^15.2.1",
     "noisejs": "^2.1.0",
     "rxjs": "~7.5.0",
     "three": "^0.144.0",

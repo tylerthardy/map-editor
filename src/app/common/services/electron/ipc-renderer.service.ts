@@ -10,6 +10,8 @@ export class IpcRendererService {
   constructor() {}
 
   public register(eventName: string, callback: (arg: any) => void) {
-    this.ipcRenderer.on(eventName, callback);
+    this.ipcRenderer.on(eventName, (event, arg) => {
+      callback(arg);
+    });
   }
 }

@@ -3,7 +3,7 @@ import { GoldenLayoutComponentState } from 'ngx-golden-layout';
 import { BoxGeometry, BufferGeometry, ConeGeometry, Mesh, MeshBasicMaterial, Object3D, Vector3 } from 'three';
 import { MeshLine, MeshLineMaterial } from 'three.meshline';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
-import { CameraService, KeyService, MAIN_CAMERA_NAME, TerrainService } from '../common/services';
+import { CameraService, ChunkService, KeyService, MAIN_CAMERA_NAME, Terrain } from '../common/services';
 import { BrushService } from '../common/services/brush/brush.service';
 import { TerrainViewportComponent } from '../terrain-viewport/terrain-viewport.component';
 
@@ -16,16 +16,20 @@ export class Terrain2dViewportComponent extends TerrainViewportComponent impleme
   public orbitControls3D!: OrbitControls;
   private orbitControls3DRepresentation!: Mesh;
   private target3DRepresentation!: Mesh;
+
   constructor(
-    terrainService: TerrainService,
+    override chunkService: ChunkService,
     override brushService: BrushService,
     override cameraService: CameraService,
     override keyService: KeyService,
     @Inject(GoldenLayoutComponentState) state: any
   ) {
-    super(terrainService, brushService, cameraService, keyService, state);
+    super(chunkService, brushService, cameraService, keyService, state);
     this.cameraName = 'terrain2dViewport';
-    this.terrainGeometry = terrainService.terrain.geometry2d;
+    this.terrainGeometry = chunkService.loadedChunk.terrain.geometry2d;
+    this.terrainMaterial = new MeshBasicMaterial({
+      vertexColors: true
+    });
   }
   override ngAfterViewInit(): void {
     this.terrainMaterial = new MeshBasicMaterial({
@@ -51,6 +55,21 @@ export class Terrain2dViewportComponent extends TerrainViewportComponent impleme
     this.registerAnimationEvents();
 
     this.addTileGrid();
+  }
+
+  override setTerrain(terrain: Terrain) {
+    this.terrain = terrain;
+    this.terrainGeometry = this.terrain.geometry2d;
+
+    if (this.scene) {
+      this.scene.remove(this.terrainMesh);
+    }
+    this.terrain = this.chunkService.loadedChunk.terrain;
+    this.terrainMesh = new Mesh(this.terrainGeometry, this.terrainMaterial);
+    if (this.scene) {
+      this.scene.add(this.terrainMesh);
+      this.addTileGrid();
+    }
   }
 
   registerAnimationEvents() {

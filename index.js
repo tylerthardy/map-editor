@@ -65,9 +65,10 @@ function onReady() {
       }
 
       const filePath = filePaths[0];
-      const dataBuffer = fs.readFileSync(filePath);
-      console.log('main: sending file-loading', dataBuffer);
-      event.sender.send('file-loading', dataBuffer);
+      fs.readFile(filePath, (error, data) => {
+        console.log('main: sending file-loading');
+        event.sender.send('file-loading', new Uint8Array(data));
+      });
 
       // fs.readFile(filePath, 'utf-8', (err, data) => {
       //   console.log('in:readfile');

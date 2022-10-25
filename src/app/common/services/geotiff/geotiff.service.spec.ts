@@ -17,7 +17,7 @@ describe('GeotiffService', () => {
   describe(GeotiffService.prototype.loadGeotiff.name, () => {
     it('should load a geotiff from file', async () => {
       const geoTiff = await service.loadGeotiff('C:/example.tiff');
-      service.printInformation(geoTiff);
+      service.toastInformation(geoTiff);
     });
   });
 });

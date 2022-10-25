@@ -1,8 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import GeoTIFF from 'geotiff';
+import GeoTIFF, { fromBlob } from 'geotiff';
 import { GoldenLayoutComponent } from 'ngx-golden-layout';
-import { concatMap, from, Observable } from 'rxjs';
-import { IpcRendererService } from './common/services';
+import { ToastrService } from 'ngx-toastr';
+import { Chunk, ChunkService, IpcRendererService } from './common/services';
 import { GeotiffService } from './common/services/geotiff/geotiff.service';
 import { LayoutService } from './common/services/layout.service';
 
@@ -15,10 +15,14 @@ export class AppComponent implements OnInit {
   @ViewChild(GoldenLayoutComponent, { static: true }) layout!: GoldenLayoutComponent;
 
   constructor(
+    private chunkService: ChunkService,
     private ipcRendererService: IpcRendererService,
     public layoutService: LayoutService,
-    public geotiffService: GeotiffService
-  ) {}
+    public geotiffService: GeotiffService,
+    private toastrService: ToastrService
+  ) {
+    ipcRendererService.register('file-loading', (file) => this.fileLoading(file));
+  }
 
   ngOnInit(): void {
     this.layoutService.layout = this.layout;
@@ -36,21 +40,28 @@ export class AppComponent implements OnInit {
     this.addComponent('Terrain2dViewportComponent');
   }
 
-  public geoTiffer(): void {
-    const geoTiffPromise = this.geotiffService.loadGeotiff('C:/example.tiff');
-    const observable: Observable<GeoTIFF> = from(geoTiffPromise);
-    observable.pipe(concatMap((geotiff) => this.geotiffService.printInformation(geotiff))).subscribe();
-  }
-
   public saveFile(): void {
     this.ipcRendererService.ipcRenderer.sendSync('save-file');
   }
 
   public openFile(): void {
-    this.ipcRendererService.ipcRenderer.send('open-file', 'datdatdat');
+    this.ipcRendererService.ipcRenderer.send('open-file');
+  }
+
+  public loadNewRandomChunk(): void {
+    this.chunkService.setChunk(ChunkService.createRandomizedChunk());
   }
 
   private addComponent(name: string): void {
     this.layoutService.addComponent(name);
+  }
+
+  private fileLoading(fileBuffer: Uint8Array): void {
+    const blob: Blob = new Blob([fileBuffer]);
+    fromBlob(blob).then((geotiff: GeoTIFF) => {
+      this.geotiffService.geotiffToChunk(geotiff, 1000).then((chunk: Chunk) => {
+        this.chunkService.setChunk(chunk);
+      });
+    });
   }
 }

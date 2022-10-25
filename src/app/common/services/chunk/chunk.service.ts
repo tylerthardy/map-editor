@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs';
 import { Chunk } from './chunk';
 import { Tile } from './tile';
 
@@ -6,15 +7,23 @@ import { Tile } from './tile';
   providedIn: 'root'
 })
 export class ChunkService {
+  public loadedChunk: Chunk = ChunkService.createRandomizedChunk();
+  public $chunkUpdated: Subject<Chunk> = new Subject();
+
   constructor() {}
 
-  createRandomizedChunk(): Chunk {
+  public setChunk(chunk: Chunk): void {
+    this.loadedChunk = chunk;
+    this.$chunkUpdated.next(this.loadedChunk);
+  }
+
+  public static createRandomizedChunk(): Chunk {
     const tiles: Tile[] = this.generateTiles();
     const chunk: Chunk = new Chunk(tiles);
     return chunk;
   }
 
-  private generateTiles(): Tile[] {
+  private static generateTiles(): Tile[] {
     const tiles: Tile[] = [];
 
     for (let y = 0; y < Chunk.size; y++) {

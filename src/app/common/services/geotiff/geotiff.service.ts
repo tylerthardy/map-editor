@@ -1,15 +1,15 @@
 import { Injectable } from '@angular/core';
 import GeoTIFF, { fromArrayBuffer, GeoTIFFImage } from 'geotiff';
-import { IpcRendererService } from '../electron';
+import { ToastrService } from 'ngx-toastr';
+import { Color } from 'three';
+import { Chunk, Tile } from '../chunk';
 const fs = window.require('fs');
 
 @Injectable({
   providedIn: 'root'
 })
 export class GeotiffService {
-  constructor(ipcRendererService: IpcRendererService) {
-    ipcRendererService.register('file-loading', (file) => this.fileLoading(file));
-  }
+  constructor(private toastrService: ToastrService) {}
 
   public async loadGeotiff(filePath: string): Promise<GeoTIFF> {
     const fileBuffer: ArrayBuffer = fs.readFileSync(filePath);
@@ -17,28 +17,46 @@ export class GeotiffService {
     return geotiff;
   }
 
-  public async printInformation(geotiff: GeoTIFF): Promise<void> {
-    console.log(geotiff.getImageCount());
+  public async toastInformation(geotiff: GeoTIFF): Promise<void> {
     const image: GeoTIFFImage = await geotiff.getImage();
-    console.log({
-      width: image.getWidth(),
-      height: image.getHeight(),
-      tileWidth: image.getTileWidth(),
-      tileHeight: image.getTileHeight()
-    });
-    const data = await image.readRasters();
-    console.log(data);
+    this.toastrService.info(
+      JSON.stringify({
+        imageCount: geotiff.getImageCount(),
+        width: image.getWidth(),
+        height: image.getHeight(),
+        tileWidth: image.getTileWidth(),
+        tileHeight: image.getTileHeight()
+      })
+    );
   }
 
-  private fileLoading(fileBuffer: ArrayBuffer): void {
-    console.log('geotiffService.fileLoading');
-    fromArrayBuffer(fileBuffer).then((geotiff: GeoTIFF) => {
-      this.printInformation(geotiff);
-    });
+  public async geotiffToChunk(
+    geotiff: GeoTIFF,
+    maxSize: number,
+    offsetX: number = 0,
+    offsetY: number = 0
+  ): Promise<Chunk> {
+    const tiles: Tile[] = [];
+    const image: GeoTIFFImage = await geotiff.getImage();
+    const width: number = image.getWidth() <= Chunk.size ? Chunk.size : maxSize;
+    const height: number = image.getHeight() <= Chunk.size ? Chunk.size : maxSize;
+    const rasters = await image.readRasters({ window: this.getWindow(offsetX, offsetY, width, height) });
+    const raster = rasters[0];
+
+    for (let y: number = 0; y < height; y++) {
+      for (let x: number = 0; x < width; x++) {
+        const tile: Tile = new Tile();
+        const value = raster[y * width + x];
+        tile.topLeftCornerColor = new Color('gray');
+        tile.topLeftCornerElevation = (value - 400) * 0.05;
+        tiles.push(tile);
+      }
+    }
+
+    return new Chunk(tiles, width);
   }
 
-  // geotiffToChunk(geotiff: GeoTIFF): Chunk {
-  //   geotiff.getSlice()
-  //   return new Chunk(tiles);
-  // }
+  private getWindow(x: number, y: number, width: number, height: number): number[] {
+    return [x, y, x + width, y + height];
+  }
 }

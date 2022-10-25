@@ -7,8 +7,8 @@ export class Chunk {
   public terrain: Terrain;
   private tiles: Tile[];
 
-  constructor(tiles: Tile[]) {
+  constructor(tiles: Tile[], size: number = Chunk.size) {
     this.tiles = tiles;
-    this.terrain = new Terrain(this.tiles, Chunk.size);
+    this.terrain = new Terrain(this.tiles, size);
   }
 }

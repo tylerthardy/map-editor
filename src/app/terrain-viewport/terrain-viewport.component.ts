@@ -1,5 +1,6 @@
-import { AfterViewInit, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, Inject, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { GoldenLayoutComponentState } from 'ngx-golden-layout';
+import { Subscription } from 'rxjs';
 import {
   AxesHelper,
   BufferGeometry,
@@ -13,7 +14,14 @@ import {
   Vector2,
   WebGLRenderer
 } from 'three';
-import { CameraService, KeyService, MAIN_CAMERA_NAME, OrbitControlCamera, TerrainService } from '../common/services';
+import {
+  CameraService,
+  Chunk,
+  ChunkService,
+  KeyService,
+  MAIN_CAMERA_NAME,
+  OrbitControlCamera
+} from '../common/services';
 import { BrushService } from '../common/services/brush/brush.service';
 import { Terrain } from '../common/services/terrain/terrain';
 
@@ -22,7 +30,7 @@ import { Terrain } from '../common/services/terrain/terrain';
   templateUrl: './terrain-viewport.component.html',
   styleUrls: ['./terrain-viewport.component.scss']
 })
-export class TerrainViewportComponent implements AfterViewInit {
+export class TerrainViewportComponent implements AfterViewInit, OnChanges {
   //TODO: Remove !s because theyre being initialized in a method - refactor that
   @ViewChild('viewport') private viewportRef!: ElementRef;
   private viewport!: HTMLDivElement;
@@ -30,9 +38,12 @@ export class TerrainViewportComponent implements AfterViewInit {
 
   protected cameraName: string = MAIN_CAMERA_NAME;
 
-  protected terrain: Terrain;
-  protected terrainMaterial: Material;
-  protected terrainGeometry: BufferGeometry;
+  protected terrain!: Terrain;
+  protected terrainMaterial: Material = new MeshStandardMaterial({
+    vertexColors: true
+  });
+  protected terrainGeometry!: BufferGeometry;
+  protected terrainSubscription: Subscription;
   protected terrainMesh!: Mesh;
 
   protected orbitControlCamera!: OrbitControlCamera;
@@ -46,18 +57,37 @@ export class TerrainViewportComponent implements AfterViewInit {
   protected animationEvents: ((z: any) => void)[] = [];
 
   constructor(
-    terrainService: TerrainService,
+    protected chunkService: ChunkService,
     protected brushService: BrushService,
     protected cameraService: CameraService,
     protected keyService: KeyService,
     @Inject(GoldenLayoutComponentState) state: any
   ) {
     this.renderer = new WebGLRenderer({ antialias: true });
-    this.terrain = terrainService.terrain;
-    this.terrainGeometry = this.terrain.geometry3d;
-    this.terrainMaterial = new MeshStandardMaterial({
-      vertexColors: true
+
+    this.terrainSubscription = this.chunkService.$chunkUpdated.subscribe((chunk: Chunk) => {
+      this.setTerrain(chunk.terrain);
     });
+
+    this.setTerrain(this.chunkService.loadedChunk.terrain);
+  }
+
+  setTerrain(terrain: Terrain): void {
+    this.terrain = terrain;
+    this.terrainGeometry = this.terrain.geometry3d;
+
+    if (this.scene) {
+      this.scene.remove(this.terrainMesh);
+    }
+    this.terrain = this.chunkService.loadedChunk.terrain;
+    this.terrainMesh = new Mesh(this.terrainGeometry, this.terrainMaterial);
+    if (this.scene) {
+      this.scene.add(this.terrainMesh);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    console.log(changes);
   }
 
   ngAfterViewInit(): void {
@@ -98,15 +128,15 @@ export class TerrainViewportComponent implements AfterViewInit {
     const axesHelper = new AxesHelper(500);
     this.scene.add(axesHelper);
 
+    // Animation loop
+    this.animationEvents.push((time) => this.processMouse());
+
     // Light
     const pointLight = new PointLight();
     pointLight.position.set(32, 300, 32);
     pointLight.intensity = 1;
     this.scene.add(pointLight);
     this.scene.add(this.getPointLightHelper(pointLight));
-
-    // Animation loop
-    this.animationEvents.push((time) => this.processMouse());
 
     // Rendering
     this.renderer.setSize(this.viewport.offsetWidth, this.viewport.offsetHeight);
@@ -116,6 +146,7 @@ export class TerrainViewportComponent implements AfterViewInit {
     this.viewport.appendChild(this.renderer.domElement);
 
     // Terrain
+    // TODO: Move to subscription
     this.terrainMesh = new Mesh(this.terrainGeometry, this.terrainMaterial);
     this.scene.add(this.terrainMesh);
   }
