@@ -3,7 +3,7 @@ import { BrushService } from '../common/services/brush/brush.service';
 
 import { BrushElevationComponent } from './brush-elevation.component';
 
-fdescribe('BrushElevationComponent', () => {
+fdescribe(BrushElevationComponent.name, () => {
   const STARTING_BRUSH_SIZE: number = 1;
   let component: BrushElevationComponent;
   let componentElement: HTMLElement;

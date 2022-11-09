@@ -5,7 +5,7 @@ import { BrushService } from '../common/services/brush/brush.service';
 
 import { TerrainViewportComponent } from './terrain-viewport.component';
 
-describe('TerrainViewportComponent', () => {
+describe(TerrainViewportComponent.name, () => {
   let component: TerrainViewportComponent;
   let fixture: ComponentFixture<TerrainViewportComponent>;
 

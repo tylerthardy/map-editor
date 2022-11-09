@@ -5,7 +5,7 @@ import { BrushService } from '../common/services/brush/brush.service';
 
 import { Terrain2dViewportComponent } from './terrain2d-viewport.component';
 
-describe('Terrain2dViewportComponent', () => {
+describe(Terrain2dViewportComponent.name, () => {
   let component: Terrain2dViewportComponent;
   let fixture: ComponentFixture<Terrain2dViewportComponent>;
 
@@ -16,7 +16,10 @@ describe('Terrain2dViewportComponent', () => {
         {
           provide: TerrainService,
           useValue: {
-            terrain: new Terrain([], 0)
+            terrain: new Terrain({
+              tiles: [],
+              size: 0
+            })
           }
         },
         {

@@ -3,6 +3,7 @@ import { ColorUtils } from '../../util/color';
 import { Tile } from '../chunk/tile';
 import { TileColors } from '../chunk/tile-colors';
 import { TileElevations } from '../chunk/tile-elevations';
+import { TerrainConfig } from './terrain-config.interface';
 import { TerrainGenerator } from './terrain-generator';
 
 export class Terrain {
@@ -19,14 +20,14 @@ export class Terrain {
   private tileColors: TileColors[] = [];
   private tileElevations: TileElevations[] = [];
 
-  constructor(tiles: Tile[], size: number) {
-    this.tiles = tiles;
-    this.width = size;
-    this.height = size;
+  constructor(config: TerrainConfig) {
+    this.tiles = config.tiles;
+    this.width = config.size;
+    this.height = config.size;
 
     const verticesPerTriangle: number = 3;
     const trianglesPerTile: number = 2;
-    const vertexCount: number = size * size * verticesPerTriangle * trianglesPerTile * 3;
+    const vertexCount: number = config.size * config.size * verticesPerTriangle * trianglesPerTile * 3;
     this.colorAttribute = new BufferAttribute(new Float32Array(vertexCount), 3);
     this.positionAttribute = new BufferAttribute(new Float32Array(vertexCount), 3);
     this.setAllTilesFromStoredProperties();
