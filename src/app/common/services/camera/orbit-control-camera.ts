@@ -7,7 +7,7 @@ export class OrbitControlCamera {
   public camera: PerspectiveCamera;
   public orbitControls: OrbitControls;
 
-  constructor(label: string, domElement: HTMLElement, aspectRatio: number) {
+  constructor(label: string, domElement: HTMLElement | undefined, aspectRatio: number) {
     this.label = label;
     const fov: number = 70;
     const near: number = 0.01;

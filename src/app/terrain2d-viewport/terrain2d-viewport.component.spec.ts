@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { GoldenLayoutComponentState } from 'ngx-golden-layout';
-import { CameraService, KeyService, Terrain, TerrainService } from '../common/services';
-import { BrushService } from '../common/services/brush/brush.service';
+import { BrushService, CameraService, MAIN_CAMERA_NAME, Terrain, TerrainService } from '../common/services';
 
 import { Terrain2dViewportComponent } from './terrain2d-viewport.component';
 
@@ -13,6 +12,7 @@ describe(Terrain2dViewportComponent.name, () => {
     await TestBed.configureTestingModule({
       declarations: [Terrain2dViewportComponent],
       providers: [
+        CameraService,
         {
           provide: TerrainService,
           useValue: {
@@ -23,19 +23,7 @@ describe(Terrain2dViewportComponent.name, () => {
           }
         },
         {
-          provide: TerrainService,
-          useValue: {}
-        },
-        {
           provide: BrushService,
-          useValue: {}
-        },
-        {
-          provide: CameraService,
-          useValue: {}
-        },
-        {
-          provide: KeyService,
           useValue: {}
         },
         {
@@ -44,6 +32,10 @@ describe(Terrain2dViewportComponent.name, () => {
         }
       ]
     }).compileComponents();
+
+    const mainCanvas: HTMLCanvasElement = document.createElement('canvas');
+    const cameraService = TestBed.inject(CameraService);
+    cameraService.createOrbitControlCamera(MAIN_CAMERA_NAME, mainCanvas, 1920 / 1080);
 
     fixture = TestBed.createComponent(Terrain2dViewportComponent);
     component = fixture.componentInstance;

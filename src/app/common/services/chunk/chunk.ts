@@ -9,6 +9,9 @@ export class Chunk {
 
   constructor(tiles: Tile[]) {
     this.tiles = tiles;
-    this.terrain = new Terrain(this.tiles, Chunk.size);
+    this.terrain = new Terrain({
+      tiles: this.tiles,
+      size: Chunk.size
+    });
   }
 }

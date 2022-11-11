@@ -1,16 +1,1 @@
-import { TestBed } from '@angular/core/testing';
-
-import { IpcRendererService } from './ipc-renderer.service';
-
-describe('IpcRendererService', () => {
-  let service: IpcRendererService;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({});
-    service = TestBed.inject(IpcRendererService);
-  });
-
-  it('should be created', () => {
-    expect(service).toBeTruthy();
-  });
-});
+// TODO: Cannot test from within Angular because it's accessing window (electron)

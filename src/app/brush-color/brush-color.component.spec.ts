@@ -12,7 +12,7 @@ describe(BrushColorComponent.name, () => {
   let mockBrushService: jasmine.SpyObj<BrushService>;
 
   beforeEach(async () => {
-    mockBrushService = jasmine.createSpyObj(BrushService.name, ['setBrushColor', 'isSelected']);
+    mockBrushService = jasmine.createSpyObj(BrushService.name, ['setBrushColor', 'isSelectedColor']);
     await TestBed.configureTestingModule({
       declarations: [BrushColorComponent],
       providers: [
@@ -41,7 +41,7 @@ describe(BrushColorComponent.name, () => {
       await fixture.whenStable();
 
       const colorButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.brush-button'));
-      const selectedButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.selected-color'));
+      const selectedButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.button-selected'));
       expect(colorButtons.length).toEqual(selectedButtons.length);
     });
   });
@@ -49,7 +49,7 @@ describe(BrushColorComponent.name, () => {
   describe(BrushColorComponent.prototype.onButtonColorClick.name, () => {
     it('should call set brush color on service when color clicked', async () => {
       const colorButtons: HTMLButtonElement[] = Array.from(componentElement.querySelectorAll('.brush-button'));
-      const button: HTMLButtonElement = colorButtons.find((button) => !button.classList.contains('selected-color'))!;
+      const button: HTMLButtonElement = colorButtons.find((button) => !button.classList.contains('button-selected'))!;
 
       button.click();
       fixture.detectChanges();
