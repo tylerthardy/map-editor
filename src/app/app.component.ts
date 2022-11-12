@@ -20,7 +20,7 @@ export class AppComponent implements OnInit {
   }
 
   public toggleMenu(): void {
-    this.ipcRendererService.ipcRenderer.sendSync('toggle-menu');
+    this.ipcRendererService.sendSync('toggle-menu');
   }
 
   public add3dViewport(): void {

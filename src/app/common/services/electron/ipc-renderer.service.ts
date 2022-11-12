@@ -8,4 +8,8 @@ export class IpcRendererService {
   public ipcRenderer: IpcRenderer = window.require('electron').ipcRenderer as IpcRenderer;
 
   constructor() {}
+
+  public sendSync(channel: string) {
+    this.ipcRenderer.sendSync(channel);
+  }
 }
