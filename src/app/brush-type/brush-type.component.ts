@@ -7,15 +7,15 @@ import { BrushService } from '../common/services/brush/brush.service';
   styleUrls: ['./brush-type.component.scss']
 })
 export class BrushTypeComponent implements OnInit {
-  constructor(protected brushService: BrushService) {}
+  constructor(public brushService: BrushService) {}
 
   ngOnInit(): void {}
 
-  protected onPaintModeClick(): void {
-    this.brushService.paintMode = true;
+  public onPaintModeClick(): void {
+    this.brushService.setPaintMode(true);
   }
 
-  protected onElevationModeClick(): void {
-    this.brushService.paintMode = false;
+  public onElevationModeClick(): void {
+    this.brushService.setPaintMode(false);
   }
 }

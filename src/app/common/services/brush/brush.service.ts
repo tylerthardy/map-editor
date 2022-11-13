@@ -8,8 +8,12 @@ import { KeyService } from '../key';
 export class BrushService {
   public brushColor: Color = new Color('white');
   public brushElevation: number = 1;
-  public paintMode: boolean = true;
+  public get paintMode(): boolean {
+    return this._paintMode;
+  }
   public modifySurrounding: boolean = true;
+
+  private _paintMode: boolean = true;
 
   constructor(keyService: KeyService) {
     keyService.registerKeyEvent({
@@ -17,9 +21,13 @@ export class BrushService {
       key: '1',
       keyDown: () => {},
       keyUp: () => {
-        this.paintMode = !this.paintMode;
+        this.setPaintMode(!this.paintMode);
       }
     });
+  }
+
+  public setPaintMode(paintOn: boolean): void {
+    this._paintMode = paintOn;
   }
 
   public setBrushColor(color: Color): void {
