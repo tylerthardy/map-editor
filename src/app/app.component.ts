@@ -2,8 +2,6 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { GoldenLayoutComponent } from 'ngx-golden-layout';
 import { IpcRendererService } from './common/services';
 import { LayoutService } from './common/services/layout.service';
-import { TerrainViewportComponent } from './terrain-viewport/terrain-viewport.component';
-import { Terrain2dViewportComponent } from './terrain2d-viewport/terrain2d-viewport.component';
 
 @Component({
   selector: 'app-root',
@@ -24,11 +22,11 @@ export class AppComponent implements OnInit {
   }
 
   public add3dViewport(): void {
-    this.addComponent(TerrainViewportComponent.name);
+    this.addComponent('TerrainViewportComponent');
   }
 
   public add2dViewport(): void {
-    this.addComponent(Terrain2dViewportComponent.name);
+    this.addComponent('Terrain2dViewportComponent');
   }
 
   private addComponent(name: string) {
