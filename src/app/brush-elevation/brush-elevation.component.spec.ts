@@ -8,18 +8,17 @@ describe(BrushElevationComponent.name, () => {
   let component: BrushElevationComponent;
   let componentElement: HTMLElement;
   let fixture: ComponentFixture<BrushElevationComponent>;
-  let mockBrushService: jasmine.SpyObj<BrushService>;
+  let mockBrushService: BrushService;
 
   beforeEach(async () => {
-    mockBrushService = jasmine.createSpyObj(BrushService.name, ['setBrushElevation', 'brushElevation']);
-    mockBrushService.brushElevation = STARTING_BRUSH_SIZE;
-
     await TestBed.configureTestingModule({
       declarations: [BrushElevationComponent],
       providers: [
         {
           provide: BrushService,
-          useValue: mockBrushService
+          useValue: jasmine.createSpyObj(BrushService.name, ['setBrushElevation'], {
+            brushElevation: STARTING_BRUSH_SIZE
+          })
         }
       ]
     }).compileComponents();
@@ -27,6 +26,7 @@ describe(BrushElevationComponent.name, () => {
     fixture = TestBed.createComponent(BrushElevationComponent);
     component = fixture.componentInstance;
     componentElement = fixture.nativeElement as HTMLElement;
+    mockBrushService = TestBed.inject(BrushService);
     fixture.detectChanges();
   });
 

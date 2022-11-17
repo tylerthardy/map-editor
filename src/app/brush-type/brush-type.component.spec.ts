@@ -6,7 +6,7 @@ import { BrushTypeComponent } from './brush-type.component';
 describe(BrushTypeComponent.name, () => {
   let component: BrushTypeComponent;
   let fixture: ComponentFixture<BrushTypeComponent>;
-  let mockBrushService: jasmine.SpyObj<BrushService> = jasmine.createSpyObj(BrushService.name, ['setPaintMode']);
+  let mockBrushService: BrushService;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -14,13 +14,14 @@ describe(BrushTypeComponent.name, () => {
       providers: [
         {
           provide: BrushService,
-          useValue: mockBrushService
+          useValue: jasmine.createSpyObj(BrushService.name, ['setPaintMode'])
         }
       ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(BrushTypeComponent);
     component = fixture.componentInstance;
+    mockBrushService = TestBed.inject(BrushService);
     fixture.detectChanges();
   });
 
