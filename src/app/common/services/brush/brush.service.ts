@@ -6,13 +6,22 @@ import { KeyService } from '../key';
   providedIn: 'root'
 })
 export class BrushService {
-  public brushColor: Color = new Color('white');
-  public brushElevation: number = 1;
+  public get brushColor(): Color {
+    return this._brushColor;
+  }
+  public get brushElevation(): number {
+    return this._brushElevation;
+  }
+  public get modifySurrounding(): boolean {
+    return this._modifySurrounding;
+  }
   public get paintMode(): boolean {
     return this._paintMode;
   }
-  public modifySurrounding: boolean = true;
 
+  private _brushColor: Color = new Color('white');
+  private _brushElevation: number = 1;
+  private _modifySurrounding: boolean = true;
   private _paintMode: boolean = true;
 
   constructor(keyService: KeyService) {
@@ -31,15 +40,19 @@ export class BrushService {
   }
 
   public setBrushColor(color: Color): void {
-    this.brushColor = color;
+    this._brushColor = color;
   }
 
   public setBrushElevation(elevation: number): void {
     if (elevation < 1) {
       elevation = 1;
     }
-    this.brushElevation = elevation;
+    this._brushElevation = elevation;
     console.log('elevation set to ' + this.brushElevation);
+  }
+
+  public setModifySurrounding(modifySurrounding: boolean): void {
+    this._modifySurrounding = modifySurrounding;
   }
 
   public isSelectedColor(color: Color): boolean {

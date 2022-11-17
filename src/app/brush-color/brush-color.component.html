@@ -6,5 +6,10 @@
     [ngStyle]="{ 'background-color': '#' + colorButton.color.getHexString() }"
   ></button>
 </ng-container>
-<input type="checkbox" id="modify-surrounding" [(ngModel)]="brushService.modifySurrounding" />
+<input
+  type="checkbox"
+  id="modify-surrounding"
+  [ngModel]="brushService.modifySurrounding"
+  (ngModelChange)="brushService.setModifySurrounding($event)"
+/>
 <label for="modify-surrounding">Modify Surrounding</label>
